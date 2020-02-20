@@ -7,7 +7,7 @@ try:
 	conncetion = psql.connect(user="postgres",
 							password="2474",
 							host="localhost",
-							database = "proj11")
+							database = "project1")
 	cursor = conncetion.cursor();
 	print(conncetion.get_dsn_parameters(), "\n")
 
@@ -146,13 +146,19 @@ def asif(f,l):
 	}
 @app.route("/name/na/getall")
 def get_name1():
-	cursor.execute("select * from user1;")
+	cursor.execute("select * from library_collection_inventory limit 100;")
 	tables=cursor.fetchall()
 	# print("-----------------")
 	# for table in tables:
 	# 	print(table)
 	# 	print("-----------------")
 	return jsonify([asif(e[0], e[1]) for e in tables])
+
+@app.route("/author/<bibnum1>")
+def get_author(bibnum1):
+	cursor.execute("select author from library_collection_inventory where bibnum = {}".format(bibnum1))
+	author = cursor.fetchall()
+	return jsonify([e for e in author])
 
 if __name__ == '__main__':
     app.run()

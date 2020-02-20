@@ -34,6 +34,19 @@ create table integrated_library_system_ils_data_dictionary(
 	CategorySubgroup text
 );
 
+create table user(
+	id integer,
+	name text,
+	contact integer, 
+	department text,
+	bookcount integer,
+	age integer
+)
+
 \copy library_collection_inventory from 'data/Library_Collection_Inventory.csv' delimiter ',' csv header;
 \copy checkouts_by_title_data_lens from 'data/Checkouts_By_Title_Data_Lens_2017.csv' delimiter ',' csv header;
 \copy integrated_library_system_ils_data_dictionary from 'data/Integrated_Library_System__ILS__Data_Dictionary.csv' delimiter ',' csv header;
+
+-- drop table library_collection_inventory;
+-- drop table checkouts_by_title_data_lens;
+-- drop table integrated_library_system_ils_data_dictionary;
