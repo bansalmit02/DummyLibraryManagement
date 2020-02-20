@@ -1,12 +1,12 @@
-from app import db
+import app 
 
-class Book(db.Model):
+class Book(app.db.Model):
 	_tablename_='books'
 
-	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String())
-	author = db.Column(db.String())
-	published = db.Column(db.String())
+	id = app.db.Column(app.db.Integer, primary_key=True)
+	name = app.db.Column(app.db.String())
+	author = app.db.Column(app.db.String())
+	published = app.db.Column(app.db.String())
 
 	def __init__(self, name, author, published):
 		self.name=name
