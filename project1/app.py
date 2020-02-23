@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, render_template
 from wtforms import RadioField, Form
 import psycopg2 as psql
 import os
+from forms import UserRegistrationForm, LoginForm
 
 SECRET_KEY='development'
 try:
@@ -39,6 +40,18 @@ def hello_world():
 @app.route("/")
 def hello():
     return "Hello World! This is Asif Anwar"
+
+
+@app.route("/adduser")
+def add_user1():
+    form = UserRegistrationForm()
+    return render_template('register.html',title='Register',form=form)
+
+
+@app.route("/login")
+def add_user():
+    form = LoginForm()
+    return render_template('login.html',title='Login',form=form)
 
 # @app.route("/add")
 # def add_book():
