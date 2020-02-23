@@ -6,47 +6,6 @@
 <center><h1>Library Management System</h1></center>
 
 <center><h2>Search Here</h2></center>
-<!-- <h4>Search by</h4>
-<label class="container">One
-  <input type="radio" checked="checked" name="radio">
-  <span class="checkmark"></span>
-</label>
-<label class="container">Two
-  <input type="radio" name="radio">
-  <span class="checkmark"></span>
-</label>
-<label class="container">Three
-  <input type="radio" name="radio">
-  <span class="checkmark"></span>
-</label>
-<label class="container">Four
-  <input type="radio" name="radio">
-  <span class="checkmark"></span>
-</label> -->
-
-<!-- <tr>
-<form action="">
-	<input type="radio" id="title" checked="checked" name="title" value="title">
-	<span class="checkmark"></span>
-	<label for="title">Title</label>
-	<input type="radio" id="author" name="author" value="author">
-	<span class="checkmark"></span>
-	<label for="author">Author</label>
-	<input type="radio" id="isbn" name="isbn" value="isbn">
-	<span class="checkmark"></span>
-	<label for="isbn">ISBN</label>
-	<input type="radio" id="publisher" name="publisher" value="publisher">
-	<span class="checkmark"></span>
-	<label for="publisher">Publisher</label>
-	<input type="radio" id="bibnumber" name="bibnumber" value="bibnumber">
-	<span class="checkmark"></span>
-	<label for="bibnumber">Bibnumber</label>
-</form>
-</tr> -->
-
-
-
-
 <form method="post" onsubmit="">
 	<table border="2" align="center" cellpadding="5" cellspacing="5">
 		<tr>
@@ -91,26 +50,28 @@
 </tr>
 </table>
 </form>
-<!-- <form method="POST">
+<table border="2" align="center" cellpadding="5" cellspacing="5">
+<tr>
+		
+		{%for post in posts%}
+		<tr>
+			<td>
+				<h1> {{ post[1] }}</h1>
+				<p>Author: {{ post[2] }}</p>
+				<p>ISBN: {{post[3]}}</p>
+				<p>Year: {{post[4]}}</p>
+			</td>	
+			<td>
+				<a href="http://127.0.0.1:5000//bookissues/{{post[3]}}">
+				<button name="issue_button">Issue</button>
+				</a>
+			</td>
+		</tr>
+		{%endfor%}
+	
 
-                <label for="name">Book Name</label>
-                <div class="form-row">
-                    <input class="form-control" type="text" placeholder="Name of Book" id="name" name="name">
-                </div>
-                <br>
-                <div class="form-row">
-                    <label for="author">Author</label>
-                    <input class="form-control" type="text" placeholder="Author Name" id="author" name="author">
-                </div>
-                <br>
-                <div class="form-row ">
-                    <label for="published">Published</label>
-                    <input class="form-control " type="date" placeholder="Published" id="published" name="published">
-                </div>
-
-                <br>
-                <button type="submit " class="btn btn-primary " style="float:right ">Submit</button>
-            
-            </form> -->
+	
+</tr>
+</table>
 </body>
 </html>

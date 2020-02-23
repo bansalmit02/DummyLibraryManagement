@@ -15,6 +15,9 @@ class LoginForm(FlaskForm):
     password = PasswordField('password',validators=[DataRequired()])
     submit = SubmitField('Login') 
 
+class BookIssuesForm(FlaskForm):
+	userId = StringField('UserId', validators=[DataRequired()])
+	submit = SubmitField('Issue Book')
 
 
 

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Issues</title>
+</head>
+<body>
+	{%for post in posts%}
+		<h1>{{ post[1] }}</h1>
+		<p>Author: {{ post[2] }}</p>
+		<p>ISBN: {{post[3]}}</p>
+		<p>Year: {{post[4]}}</p>
+	{%endfor%}
+	<form method="POST" action="">
+     {{form.hidden_tag()}}
+     <fieldset class = "form-group">
+       <div class = "form-group">
+         {{form.userId.label(class="form-control-label")}}
+         {{form.userId(class="form-control form-control-lg")}}
+       </div>
+     </fieldset>
+     <div class="form-group">
+       {{form.submit(class="btn btn-outline-info")}}
+     </div>
+   </form>
+</div>
+<div class="border-top pt-3">
+  <small class="text-muted">
+    Want to search new Book? <a class="ml-2" href="{{url_for('search_form')}}">Search here</a>
+  </small>
+</body>
+</html>
