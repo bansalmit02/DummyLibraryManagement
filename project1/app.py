@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy 
+from forms import UserRegistrationForm , LoginForm
 import psycopg2 as psql
 import os
 import models
 try:
-	conncetion = psql.connect(user="postgres",
-							password="2474",
+	conncetion = psql.connect(user="admin",
+							password="minhaj",
 							host="localhost",
-							database = "project1")
+							database = "library")
 	cursor = conncetion.cursor();
 	print(conncetion.get_dsn_parameters(), "\n")
 
@@ -20,8 +21,8 @@ except Exception as e:
 	print("Error while connection to postgresSql", e)
 
 app = Flask(__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
+#app.config.from_object(os.environ['APP_SETTINGS'])
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False 
 db = SQLAlchemy(app)
 
 
@@ -29,6 +30,21 @@ db = SQLAlchemy(app)
 @app.route("/")
 def hello():
     return "Hello World! This is Asif Anwar"
+
+
+
+
+@app.route("/adduser")
+def add_user():
+    form = UserRegistrationForm()
+    return render_template('register.html',title='Register',form=form)
+
+
+@app.route("/login")
+def add_user():
+    form = LoginForm()
+    return render_template('login.html',title='Login',form=form)
+
 
 @app.route("/add")
 def add_book():
@@ -54,6 +70,7 @@ def get_all():
 		return jsonify([e.serialize() for e in books])
 	except Exception as e:
 		return(str(e))
+
 @app.route("/get/<id_>")
 def get_by_id(id_):
     try:
@@ -61,6 +78,7 @@ def get_by_id(id_):
         return jsonify(book.serialize())
     except Exception as e:
 	    return(str(e))
+
 @app.route("/add/form",methods=['GET', 'POST'])
 def add_book_form():
     if request.method == 'POST':
@@ -81,15 +99,18 @@ def add_book_form():
             return(str(e))
     return render_template("getdata.html")
 
+
 @app.route("/name/<name>")
 def get_book_name(name):
     return "name : {}".format(name)
+
 
 @app.route("/details")
 def get_book_details():
     author=request.args.get('author')
     published=request.args.get('published')
     return "Author : {}, Published: {}".format(author,published)
+
 @app.route("/name/na", methods=['GET', 'POST', 'PUT'])
 def get_name():
 	if request.method == 'POST':
@@ -114,6 +135,7 @@ def get_name():
 			# return "Name Added = {}".format(fname + " " + lname);
 			raise e
 	return render_template('name.html')
+
 def checkTableExists(tablename):
     dbcur = conncetion.cursor()
     stmt = "select * from '{}';".format(tablename)
