@@ -3,10 +3,10 @@ from wtforms import StringField,PasswordField,SubmitField
 from wtforms.validators import DataRequired , EqualTo
 
 class UserRegistrationForm(FlaskForm):
-    name = StringField('Username',validators=[DataRequired()])
-    contact = StringField('contact',validators=[DataRequired()])
+    entryNumber = StringField('Entry Number',validators=[DataRequired()])
+    name = StringField('name',validators=[DataRequired()])
     password = PasswordField('password',validators=[DataRequired()])
-    confirm_password = PasswordField('contact',validators=[DataRequired(),EqualTo('password')])
+    emailId = StringField('Email Id',validators=[DataRequired()])
     submit = SubmitField('Sign up')
 
 

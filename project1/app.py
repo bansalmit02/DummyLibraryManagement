@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, url_for, flash, redirect
 # from flask.ext.wtf import Form
 from wtforms import RadioField, Form
 import psycopg2 as psql
@@ -42,15 +42,53 @@ def hello():
     return "Hello World! This is Asif Anwar"
 
 
-@app.route("/adduser")
-def add_user1():
+@app.route("/adduser", methods=['GET', 'POST'])
+def add_user():
     form = UserRegistrationForm()
+    if not form.validate_on_submit():
+    	flash('please enter valid user details')
+    else:
+	    entrynumber = form.entryNumber.data
+	    name = form.name.data
+	    password = form.password.data
+	    emailid = form.emailId.data
+    if request.method == 'POST' and validateForm(entrynumber):
+    	insertstmt = "insert into userDetails values ('{}', '{}', '{}', '{}',{},{},{});".format(entrynumber, name, password, emailid,0,0,0)
+    	cursor.execute(insertstmt)
+    	connection.commit()
+    	return redirect(url_for('search_form'))
+    else:
+    	flash('user already exist')
+    	
+
+
     return render_template('register.html',title='Register',form=form)
 
-
-@app.route("/login")
-def add_user():
+def validateForm(userId):
+    userAvailabe = "select id from userDetails where id='{}';".format(userId)
+    cursor.execute(userAvailabe)
+    tables = cursor.fetchall()
+    if len(tables) == 0:
+    	return True
+    return False
+def validateUser(name, password):
+	checkUser = "select id from userDetails where password='{}';".format(password)
+	cursor.execute(checkUser)
+	tables = cursor.fetchall()
+	if len(tables) != 0:
+		return True
+	return False
+@app.route('/login', methods=['post','get'])
+def login_user():
     form = LoginForm()
+    name = form.name.data
+    password = form.password.data
+    if request.method=='POST' and (not validateForm(name) and validateUser(name, password)):
+    	return redirect(url_for('search_form'))
+    else:
+    	flash("user doesn't exitst please sign in")
+
+
     return render_template('login.html',title='Login',form=form)
 
 # @app.route("/add")
