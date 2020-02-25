@@ -6,37 +6,35 @@
 <center><h1>Library Management System</h1></center>
 
 <center><h2>Search Here</h2></center>
-<form method="post" onsubmit="">
-	<table border="2" align="center" cellpadding="5" cellspacing="5">
+
+<form method="post">
+<table border="2" align="center" cellpadding="5" cellspacing="5">
 		<tr>
 			<td>Search by</td>
 			<td>
 				<label class="container">Title
-				  <input type="radio" checked="checked" name="radio" value="title" id="title">
+				  <input type="radio" checked="checked" name="searchbyradio" value="title" id="title">
 				  <span class="checkmark"></span>
 				</label>
 				<label class="container">Author
-				  <input type="radio" name="radio" value="author" id="author">
+				  <input type="radio" name="searchbyradio" value="author" id="author">
 				  <span class="checkmark"></span>
 				</label>
 				<label class="container">ISBN
-				  <input type="radio" name="radio" value="isbn" id="isbn">
+				  <input type="radio" name="searchbyradio" value="isbn" id="isbn">
 				  <span class="checkmark"></span>
 				</label>
 				<label class="container">Publisher
-				  <input type="radio" name="radio" value="publisher" id="publisher">
+				  <input type="radio" name="searchbyradio" value="publisher" id="publisher">
 				  <span class="checkmark"></span>
 				</label>
 				<label class="container">BibNumber
-				  <input type="radio" name="radio" value="bibnumber" id="bibnumber">
+				  <input type="radio" name="searchbyradio" value="bibnum" id="bibnumber">
 				  <span class="checkmark"></span>
 				</label>
 			</td>
 		</tr>
 	</table>
-</form>
-
-<form method="post">
 <table border="2" align="center" cellpadding="5" cellspacing="5">
 <tr>
 <td> Enter Here:</td>

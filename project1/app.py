@@ -24,7 +24,7 @@ try:
 except Exception as e:
 	print("Error while connection to postgresSql", e)
 
-app = Flask(__name__)
+app = Flask (__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 
 class SimpleForm(object):
@@ -124,9 +124,9 @@ def book_issues(book_name):
 	print(book_name)
 	cursor.execute(book_search)
 	tables = cursor.fetchall()
-	for row in tables:
-		print(row)
-		print(len(row))
+	# for row in tables:
+	# 	print(row)
+	# 	print(len(row))
 		# print('hello')
 	posts =[e for e in tables]
 	userId = form.userId.data
@@ -138,13 +138,17 @@ def search_form():
 	initialtenvalue="""select * from library_collection_inventory limit 10;"""
 	cursor.execute(initialtenvalue)
 	posts1=[e for e in cursor.fetchall()]
+	# option = request.form['radio']
+	# if request.form['radio']=='title':
+	# 		print("hello world")
+	searchby = ""
+
 	if request.method == 'POST':
-		
-		if (request.form.get('radio')=='title'):
-			print("hello world")
+		searchby=request.form['searchbyradio']
+		print(searchby)
 		book_name = request.form.get('book_name')
 		try:
-			stmt = """select * from library_collection_inventory where title like '%{}%' limit 20;""".format(book_name)
+			stmt = """select * from library_collection_inventory where {} like '%{}%' limit 20;""".format(searchby, book_name)
 			print(stmt)
 			cursor.execute(stmt)
 			tables = cursor.fetchall()
