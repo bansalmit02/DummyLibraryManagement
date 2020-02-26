@@ -1,0 +1,63 @@
+<!DOCTYPE HTML>
+<html lang="en">
+
+<html>
+<style>
+body {
+  background-image: url('../../img/Library-HD-Background.jpg');
+  background-repeat: no-repeat;
+}
+</style>
+<body >
+
+	
+
+
+<center><h1>Welcome to The coolest Library in The Wold</h1></center>
+
+<center><h2>Admin</h2></center>
+<center><a href="{{ url_for('admin_login') }}">Sign in</a></center>
+	
+
+<br>
+<br>
+<br>
+
+<center><h2>User</h2></center>
+<center>Already have an account?  <a href="{{ url_for('login_user') }}">Sign in</a></center>
+<center>New User?  <a href="{{ url_for('add_user') }}">Sign Up</a></center>
+
+
+<div class="border-top pt-3">
+  <small class="text-muted">
+   
+  </small>
+  
+</div>
+
+
+<!-- <table border="2" align="center" cellpadding="5" cellspacing="5">
+<tr>
+		
+		{%for post in posts%}
+		<tr>
+			<td>
+				<h1> {{ post[1] }}</h1>
+				<p>Author: {{ post[2] }}</p>
+				<p>ISBN: {{post[3]}}</p>
+				<p>Year: {{post[4]}}</p>
+			</td>	
+			<td>
+				<a href="http://127.0.0.1:5000//bookissues/{{post[3]}}">
+				<button name="issue_button">Issue</button>
+				</a>
+			</td>
+		</tr>
+		{%endfor%}
+	
+
+	
+</tr>
+</table> -->
+</body>
+</html>

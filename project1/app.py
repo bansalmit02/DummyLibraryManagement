@@ -27,9 +27,9 @@ except Exception as e:
 app = Flask (__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 
-class SimpleForm(object):
-	"""docstring for SimpleForm"""
-	example=RadioField("label", choices=[('value', 'description'), ('value_two', 'dsfafd')])
+# class SimpleForm(object):
+# 	"""docstring for SimpleForm"""
+# 	example=RadioField("label", choices=[('value', 'description'), ('value_two', 'dsfafd')])
 	
 @app.route('/hello',methods=['post','get'])
 def hello_world():
@@ -42,7 +42,33 @@ def hello_world():
 
 @app.route("/")
 def hello():
-    return "Hello World! This is Asif Anwar"
+    return render_template('welcome.html')
+
+@app.route("/adminlogin", methods=['GET', 'POST'])
+def admin_login():
+	form = LoginForm()
+	username = form.name.data
+	password = form.password.data
+	if request.method=='POST':
+		adminloginquery = "select * from admindetails where username = '{}' and password = '{}';".format(username, password);
+		cursor.execute(adminloginquery)
+		usernametable = cursor.fetchall()
+		if len(usernametable) != 0:
+			return redirect(url_for('admin1', username=username))
+		else:
+			flash("user doesn't exist")
+	return render_template('login.html', title='AdminLogin', form=form)
+
+@app.route("/adminlogin/admin1", methods=['GET', 'POST'])
+def admin1():
+	username=request.args.get('username', None)
+	print(username);
+	stmt = "select * from admindetails where username = '{}';".format(username)
+	cursor.execute(stmt)
+	tables = cursor.fetchall()
+	posts = tables[0]
+	print(posts[0])
+	return render_template('admin1.html', posts=posts)
 
 
 @app.route("/adduser", methods=['GET', 'POST'])
