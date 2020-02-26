@@ -1,19 +1,30 @@
-from flask import Flask, request, jsonify, render_template, url_for, flash, redirect
+from flask import Flask, request, session, jsonify, render_template, url_for, flash, redirect
 # from flask.ext.wtf import Form
 from wtforms import RadioField, Form
 import psycopg2 as psql
 import os
 from forms import UserRegistrationForm, LoginForm, BookIssuesForm
+# from flask_login import LoginManager, UserMixin, login_required, login_user, current_user
+from flask_login import login_required,login_manager
+from functools import wraps
+from flask_login import LoginManager
+
+
+# login_manager = LoginManager()
+# login_manager.init_app(app)
+
 
 SECRET_KEY='development'
+# 
 
 psql.extensions.register_type(psql.extensions.UNICODE)
 psql.extensions.register_type(psql.extensions.UNICODEARRAY)
 try:
 	connection = psql.connect(user="postgres",
-							password="2474",
+							password="keygen",
+							port="5433",
 							host="localhost",
-							database = "project1")
+							database = "lib_db")
 	cursor = connection.cursor();
 	print(connection.get_dsn_parameters(), "\n")
 
@@ -23,9 +34,12 @@ try:
    
 except Exception as e:
 	print("Error while connection to postgresSql", e)
-
+# cursor = connection.cursor();
 app = Flask (__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
+
+# login_manager = LoginManager()
+# login_manager.init_app(app)
 
 # class SimpleForm(object):
 # 	"""docstring for SimpleForm"""
@@ -70,7 +84,6 @@ def admin1():
 	print(posts[0])
 	return render_template('admin1.html', posts=posts)
 
-
 @app.route("/adduser", methods=['GET', 'POST'])
 def add_user():
     form = UserRegistrationForm()
@@ -82,7 +95,7 @@ def add_user():
 	    password = form.password.data
 	    emailid = form.emailId.data
     if request.method == 'POST' and validateForm(entrynumber):
-    	insertstmt = "insert into userDetails values ('{}', '{}', '{}', '{}',{},{},{});".format(entrynumber, name, password, emailid,0,0,0)
+    	insertstmt = "insert into userdetails values ('{}', '{}', '{}', '{}',{},{},{});".format(entrynumber, name, password, emailid,0,0,0)
     	cursor.execute(insertstmt)
     	connection.commit()
     	return redirect(url_for('search_form'))
@@ -94,14 +107,15 @@ def add_user():
     return render_template('register.html',title='Register',form=form)
 
 def validateForm(userId):
-    userAvailabe = "select id from userDetails where id='{}';".format(userId)
+    userAvailabe = "select id from userdetails where id='{}';".format(userId)
     cursor.execute(userAvailabe)
     tables = cursor.fetchall()
     if len(tables) == 0:
     	return True
     return False
+
 def validateUser(name, password):
-	checkUser = "select id from userDetails where password='{}';".format(password)
+	checkUser = "select id from userdetails where password='{}';".format(password)
 	cursor.execute(checkUser)
 	tables = cursor.fetchall()
 	if len(tables) != 0:
@@ -113,11 +127,13 @@ def login_user():
     name = form.name.data
     password = form.password.data
     if request.method=='POST' and (not validateForm(name) and validateUser(name, password)):
-    	return redirect(url_for('search_form'))
-    else:
-    	flash("user doesn't exitst please sign in")
-
-
+    	cursor.execute("select * from userdetails where id = '{}';".format(name))
+    	nam=cursor.fetchall()
+    	# print(nam[0][1])
+    	return redirect(url_for('user', username =nam[0][1]))
+    elif request.method=='POST':
+    	flash("user doesn't exitst please sign up")
+    
     return render_template('login.html',title='Login',form=form)
 
 def makeJson(listValue):
@@ -170,7 +186,6 @@ def search_form():
 	searchby = ""
 
 	if request.method == 'POST':
-		searchby=request.form['searchbyradio']
 		print(searchby)
 		book_name = request.form.get('book_name')
 		try:
@@ -296,7 +311,56 @@ def get_author(bibnum1):
 #         return jsonify(book.serialize())
 #     except Exception as e:
 # 	    return(str(e))
+
+
+# login_manager = LoginManager()
+
+# def login_required(f):
+# 	@wraps(f)
+# 	def wrap(*args,**kwargs):
+# 		if 'logged_in' in session:
+# 			return f(*args,**kwargs)
+# 		else:
+# 			flash("You need to login first")
+# 	return redirect(url_for('login_user'))
+
+def login_required(test):
+    @wraps(test)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return test(*args, **kwargs)
+        else:
+            flash('You need to login first.')
+            return redirect(url_for('login_user'))
+    return wrap
+
+
+@app.route('/user/<username>')
+# @login_required
+def user(username):
+	cursor.execute("select name from userdetails where name = '{}';".format(username))
+	user = cursor.fetchall()
+	# uu=user[0]
+	cursor.execute("select * from userdetails where name = '{}';".format(username))#assuming that checkouts_by_title_data_lens contains column of user name
+	table_history = cursor.fetchall()
+	cursor.execute("select * from userdetails where name = '{}';".format(username))#assuming that checkout_List is for present  contains column of user name
+	table_current = cursor.fetchall()
+	if len(user)!=0 :
+		posts = [
+		{'author': table_current, 'body': table_current},
+		{'author': table_history, 'body': table_history}
+		]
+		return render_template('user.html', user=user, posts=posts)
+   	else: 
+   		return 'not found'
+    
+   
+
+
+
+
 if __name__ == '__main__':
     app.run()
     cursor.close()
     connection.close()
+    searchby=request.form['searchbyradio']
