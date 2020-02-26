@@ -24,8 +24,9 @@
     <hr>
     {% for post in posts %}
     <p>
-    {{ post.author.username }} says: <b>{{ post.body }}</b>
+    {{ post.author.username }} Issued Book: <b>{{ post.body }}</b>
     </p>
+    <hr>
     {% endfor %}
 {% endblock %}
 

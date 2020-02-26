@@ -5,40 +5,68 @@
 </head>
 <body bgcolor="cyan">
 <div>
-  <h1>Login</h1>
-  
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    
-    {% for message in messages %}
-      {{ message }}
-    {% endfor %}
-    
-  {% endif %}
-{% endwith %}
-
-  
+  <a href="{{url_for('welcome')}}"><i class="fa fa-fw fa-envelope"></i>Home Page</a>
+  <a href="{{url_for(stringvalue[4])}}"><i class="fa fa-fw fa-envelope"></i>{{ stringvalue[3] }}</a>
+  <a href="{{url_for('add_user')}}"><i class="fa fa-fw fa-envelope"></i>User Signup</a>
+</div>
+<div>
+  <center>
+    <h1>Dummy Library</h1>
+  </center>
+  <br>
+  <center>
+    <h2>{{ stringvalue[2] }} Login</h2>
+  </center>  
    <form method="POST" action="">
-     {{form.hidden_tag()}}
-     <fieldset class = "form-group">
-       <div class = "form-group">
+    <table border="1" align="center" cellpadding="5" cellspacing="5">
+      <tr>
+        {{form.hidden_tag()}}
+     <!-- <fieldset class = "form-group"> -->
+        <td>
+           <div class = "form-group">
          {{form.name.label(class="form-control-label")}}
          {{form.name(class="form-control form-control-lg")}}
        </div>
-       <div class = "form-group">
+        </td>
+        <td>
+          <div class = "form-group">
          {{form.password.label(class="form-control-label")}}
          {{form.password(class="form-control form-control-lg")}}
        </div>
-     </fieldset>
-     <div class="form-group">
+        </td>     
+     <!-- </fieldset>         -->
+      </tr>
+    </table>
+    <br>
+    <center>
+      <div class="form-group">
        {{form.submit(class="btn btn-outline-info")}}
      </div>
+    </center>
+    <center>
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p> <font color="#FF0000">
+      {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  </font>
+    </p>    
+  {% endif %}
+{% endwith %}
+  </center>
+     
    </form>
+   <br>
+   <br>
 </div>
 <div class="border-top pt-3">
-  <small class="text-muted">
-    New User? <a class="ml-2" href="{{url_for('add_user')}}">SignUp here</a>
+  <center>
+    <small class="text-muted">
+    {{ stringvalue[0] }}? <a class="ml-2" href="{{url_for('add_user')}}">{{ stringvalue[1] }}</a>
   </small>
+  </center>
+  
   
 </div>
 </body>

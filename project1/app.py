@@ -21,10 +21,9 @@ psql.extensions.register_type(psql.extensions.UNICODE)
 psql.extensions.register_type(psql.extensions.UNICODEARRAY)
 try:
 	connection = psql.connect(user="postgres",
-							password="keygen",
-							port="5433",
+							password="2474",
 							host="localhost",
-							database = "lib_db")
+							database = "project1")
 	cursor = connection.cursor();
 	print(connection.get_dsn_parameters(), "\n")
 
@@ -38,35 +37,18 @@ except Exception as e:
 app = Flask (__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 
-<<<<<<< HEAD
-=======
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-
-# class SimpleForm(object):
-# 	"""docstring for SimpleForm"""
-# 	example=RadioField("label", choices=[('value', 'description'), ('value_two', 'dsfafd')])
-	
->>>>>>> 80841103160bc826544e4494e57eceb8b80ac3e1
-@app.route('/hello',methods=['post','get'])
-def hello_world():
-    form = SimpleForm()
-    if form.validate_on_submit():
-        print form.example.data
-    else:
-        print form.errors
-    return render_template('example.html',form=form)
-
 @app.route("/")
 def welcome():
     return render_template('welcome.html')
 
 @app.route("/adminlogin", methods=['GET', 'POST'])
 def admin_login():
+	stringvalue=['Not an Admin', 'Click Here', "Admin", "User Signin","login_user" ]
 	form = LoginForm()
 	username = form.name.data
 	password = form.password.data
 	if request.method=='POST':
+		username=username.upper()
 		adminloginquery = "select * from admindetails where username = '{}' and password = '{}';".format(username, password);
 		cursor.execute(adminloginquery)
 		usernametable = cursor.fetchall()
@@ -74,7 +56,7 @@ def admin_login():
 			return redirect(url_for('admin1', username=username))
 		else:
 			flash("user doesn't exist")
-	return render_template('login.html', title='AdminLogin', form=form)
+	return render_template('login.html', title='AdminLogin', form=form, stringvalue=stringvalue)
 
 @app.route("/adminlogin/admin1", methods=['GET', 'POST'])
 def admin1():
@@ -88,7 +70,7 @@ def admin1():
 	
 	return render_template('admin1.html', posts=posts)
 
-<<<<<<< HEAD
+
 @app.route("/adminlogin/userhistory", methods=['GET', 'POST'])
 def user_history():
 
@@ -97,10 +79,10 @@ def user_history():
 @app.route("/adminlogin/returnbook", methods=['GET', 'POST'])
 def book_return():
 	return render_template('returnbook.html')
-=======
->>>>>>> 80841103160bc826544e4494e57eceb8b80ac3e1
-@app.route("/adduser", methods=['GET', 'POST'])
+
+@app.route("/signup", methods=['GET', 'POST'])
 def add_user():
+    stringvalue=["Already Have an Account", "Sign in", "User", "Admin Singin", "admin_login",]
     form = UserRegistrationForm()
     if not form.validate_on_submit():
     	flash('please enter valid user details')
@@ -109,28 +91,49 @@ def add_user():
 	    name = form.name.data
 	    password = form.password.data
 	    emailid = form.emailId.data
-    if request.method == 'POST' and validateForm(entrynumber):
-    	insertstmt = "insert into userdetails values ('{}', '{}', '{}', '{}',{},{},{});".format(entrynumber, name, password, emailid,0,0,0)
+    if request.method == 'POST' and userNotAvailabe(entrynumber) and len(entrynumber)>4 and len(name) > 3 and len(password) > 7 and '@' in emailid and not pendingAvailable(entrynumber):
+    	insertstmt = "insert into pending values ('{}', '{}', '{}', '{}',{},{},{});".format(entrynumber, name, password, emailid,0,0,0)
     	cursor.execute(insertstmt)
     	connection.commit()
-    	return redirect(url_for('search_form'))
-    else:
-    	flash('user already exist')
-    	
+    	flash("Please wait till confirmation")
+    	return redirect(url_for('login_user'))
+    elif request.method=='POST' and len(entrynumber) < 6:
+    	flash('length of userid is too sort')
+    elif request.method=='POST' and len(name) < 4:
+    	flash('length of name is too sort')
+    elif request.method=='POST' and len(password) < 8:
+    	flash('Please enter at least 8 word password')
+    elif request.method=='POST' and ('@' not in emailid):
+    	flash('Please enter valid email id')
+    elif request.method=='POST' and pendingAvailable(entrynumber):
+    	flash("Already signup....Please wait till confirmation")
+    elif request.method=='POST' and not userNotAvailabe(entrynumber):
+    	flash("Userid Already taken please try different userid")
 
+    return render_template('register.html',title='Register',form=form, stringvalue=stringvalue)
 
-    return render_template('register.html',title='Register',form=form)
+def userNotAvailabe(userid):
+	userid = userid.upper()
+	userAvailabe = "select id from userdetails where id='{}';".format(userid)
+	cursor.execute(userAvailabe)
+	tables = cursor.fetchall()
+	if len(tables) == 0:
+		return True
+	elif len(userid) < 5:
+		return True
+	return False
 
-def validateForm(userId):
-    userAvailabe = "select id from userdetails where id='{}';".format(userId)
-    cursor.execute(userAvailabe)
-    tables = cursor.fetchall()
-    if len(tables) == 0:
-    	return True
-    return False
-
-def validateUser(name, password):
-	checkUser = "select id from userdetails where password='{}';".format(password)
+def validateUser(userid, password):
+	userid = userid.upper()
+	checkUser = "select id from userdetails where password='{}' and id='{}';".format(password, userid)
+	cursor.execute(checkUser)
+	tables = cursor.fetchall()
+	if len(tables) != 0:
+		return True
+	return False
+def pendingAvailable(userid):
+	userid=userid.upper()
+	checkUser="select id from pending where id='{}';".format(userid)
 	cursor.execute(checkUser)
 	tables = cursor.fetchall()
 	if len(tables) != 0:
@@ -139,41 +142,31 @@ def validateUser(name, password):
 @app.route('/login', methods=['POST','GET'])
 def login_user():
     form = LoginForm()
-    name = form.name.data
+    stringvalue=["New User", "Sign Up", "User", "Admin Sign in", "admin_login"]
+    userid = form.name.data
     password = form.password.data
-    if request.method=='POST' and (not validateForm(name) and validateUser(name, password)):
-    	cursor.execute("select * from userdetails where id = '{}';".format(name))
-    	nam=cursor.fetchall()
-    	# print(nam[0][1])
-    	return redirect(url_for('user', username =nam[0][1]))
-    elif request.method=='POST':
-    	flash("user doesn't exitst please sign up")
-    
-    return render_template('login.html',title='Login',form=form)
+    if request.method=='POST' and (not userNotAvailabe(userid) and validateUser(userid, password)) and not pendingAvailable(userid):
+    	return redirect(url_for('search_form'))
+    elif request.method=='POST' and pendingAvailable(userid):
+    	flash("User haven't confirmed yet Please wait")
+    elif request.method=='POST' and userNotAvailabe(userid):
+    	flash("Username not available please sign up")
+    elif request.method=='POST' and not userNotAvailabe(userid):
+    	flash("Password doesn't match")
 
-def makeJson(listValue):
-	return {
-	'bibnum': """{}""".format(listValue[0]),
-	'title' : """{}""".format(listValue[1]),
-	'author' : """{}""".format(listValue[2]),
-	'isbn' : """{}""".format(listValue[3]),
-	'publicationYear' : """{}""".format(listValue[4]), 
-	'publisher' : """{}""".format(listValue[5]),
-	'subject' : """{}""".format(listValue[6]), 
-	'itemType' : """{}""".format(listValue[7]),
-	'itemCollection' : """{}""".format(listValue[8]),
-	'floatingItem' : """{}""".format(listValue[9]),
-	'itemLocation' : """{}""".format(listValue[10]),
-	'reportDate' : """{}""".format(listValue[11]),
-	'iteccount' : """{}""".format(listValue[12])
-	}
-# posts=[{
-# 	'title':"Asif Anwar",
-# 	'author': "Asir",
-# 	'isbn': "38434989",
-# 	'iteccount': 1
 
-# }]
+    return render_template('login.html',title='Login',form=form, stringvalue=stringvalue)
+
+def login_required(test):
+    @wraps(test)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return test(*args, **kwargs)
+        else:
+            flash('You need to login first.')
+            return redirect(url_for('login_user'))
+    return wrap
+
 @app.route('/bookissues/<book_name>')
 def book_issues(book_name):
 	form = BookIssuesForm()
@@ -181,13 +174,8 @@ def book_issues(book_name):
 	print(book_name)
 	cursor.execute(book_search)
 	tables = cursor.fetchall()
-	# for row in tables:
-	# 	print(row)
-	# 	print(len(row))
-		# print('hello')
 	posts =[e for e in tables]
 	userId = form.userId.data
-	
 	return render_template('bookIssues.html', posts=posts, form=form)
 
 @app.route("/search", methods=['GET', 'POST'])
@@ -195,11 +183,7 @@ def search_form():
 	initialtenvalue="""select * from library_collection_inventory limit 10;"""
 	cursor.execute(initialtenvalue)
 	posts1=[e for e in cursor.fetchall()]
-	# option = request.form['radio']
-	# if request.form['radio']=='title':
-	# 		print("hello world")
 	searchby = ""
-
 	if request.method == 'POST':
 		print(searchby)
 		book_name = request.form.get('book_name')
@@ -214,6 +198,9 @@ def search_form():
 			raise e
 	return render_template("searchpage.html", posts=posts1)
 
+
+
+#TODO make this as insert new book methods
 @app.route("/add/form",methods=['GET', 'POST'])
 def add_book_form():
     if request.method == 'POST':
@@ -221,53 +208,15 @@ def add_book_form():
         author=request.form.get('author')
         published=request.form.get('published')
         try:
-           	
             return name
         except Exception as e:
             return(str(e))
     return render_template("getdata.html")
 
-@app.route("/name/<name>")
-def get_book_name(name):
-    return "name : {}".format(name)
 
-# @app.route("/details")
-# def get_book_details():
-#     author=request.args.get('author')
-#     published=request.args.get('published')
-#     return "Author : {}, Published: {}".format(author,published)
-@app.route("/name/na", methods=['GET', 'POST', 'PUT'])
-def get_name():
-	if request.method == 'POST':
-		fname = request.form.get('fname')
-		lname = request.form.get('lname')
-		try:
-			# cursor = connection.cursor();
-			# if not checkTableExists("Asif"):
-				# print("Table Dont exist")
-
-			cursor.execute("insert into user1 values ('{}', '{}');".format(fname, lname))
-			connection.commit()
-			# cursor.close()
-			# return "Name Added = {}".format(fname + " " + lname);
-			return get_name1()
-		except Exception as e:
-			# cursor = connection.cursor();
-			# cursor.execute("create table user1(fname VARCHAR(10), lname VARCHAR(40));")
-			# connection.commit()
-			# cursor.execute("insert into user1 values ({}, {});".format(fname, lname))
-			# cursor.close()
-			# return "Name Added = {}".format(fname + " " + lname);
-			raise e
-	return render_template('name.html')
 def checkTableExists(tablename):
     dbcur = connection.cursor()
     stmt = "select * from '{}';".format(tablename)
-    # dbcur.execute("""
-    #     SELECT COUNT(*)
-    #     FROM information_schema.tables
-    #     WHERE table_name = '{0}'
-    #     """.format(tablename.replace('\'', '\'\'')))
     try:
     	dbcur.execute(stmt)
     	return True
@@ -275,80 +224,6 @@ def checkTableExists(tablename):
     	return False
     dbcur.close()
     return False
-def asif(f,l):
-	return{
-		'fname': f,
-		'lname': l
-	}
-@app.route("/name/na/getall")
-def get_name1():
-	cursor.execute("select * from library_collection_inventory limit 10;")
-	tables=cursor.fetchall()
-	# print("-----------------")
-	# for table in tables:
-	# 	print(table)
-	# 	print("-----------------")
-	return jsonify([e for e in tables])
-
-@app.route("/author/<bibnum1>")
-def get_author(bibnum1):
-	cursor.execute("select author from library_collection_inventory where bibnum = {}".format(bibnum1))
-	author = cursor.fetchall()
-	return jsonify([e for e in author])
-# @app.route("/add")
-# def add_book():
-# 	name=request.args.get('name')
-# 	author=request.args.get('author')
-# 	published=request.args.get('published')
-# 	try:
-# 		book=models.Book(
-# 			name=name,
-# 			author=author,
-# 			published=published
-# 			)
-# 		db.session.add(book)
-# 		db.session.commit()
-# 		return "Book added. book id={}".format(book.id)
-# 	except Exception as e:
-# 		return(str(e))
-
-# @app.route("/getall")
-# def get_all():
-# 	try:
-# 		books = models.Book.query.all()
-# 		return jsonify([e.serialize() for e in books])
-# 	except Exception as e:
-# 		return(str(e))
-# @app.route("/get/<id_>")
-# def get_by_id(id_):
-#     try:
-#         book=models.Book.query.filter_by(id=id_).first()
-#         return jsonify(book.serialize())
-#     except Exception as e:
-# 	    return(str(e))
-
-
-# login_manager = LoginManager()
-
-# def login_required(f):
-# 	@wraps(f)
-# 	def wrap(*args,**kwargs):
-# 		if 'logged_in' in session:
-# 			return f(*args,**kwargs)
-# 		else:
-# 			flash("You need to login first")
-# 	return redirect(url_for('login_user'))
-
-def login_required(test):
-    @wraps(test)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return test(*args, **kwargs)
-        else:
-            flash('You need to login first.')
-            return redirect(url_for('login_user'))
-    return wrap
-
 
 @app.route('/user/<username>')
 # @login_required
@@ -356,9 +231,9 @@ def user(username):
 	cursor.execute("select name from userdetails where name = '{}';".format(username))
 	user = cursor.fetchall()
 	# uu=user[0]
-	cursor.execute("select * from userdetails where name = '{}';".format(username))#assuming that checkouts_by_title_data_lens contains column of user name
+	cursor.execute("select * from checkin_data where userid = '{}';".format(user[0][0]))#assuming that checkouts_by_title_data_lens contains column of user name
 	table_history = cursor.fetchall()
-	cursor.execute("select * from userdetails where name = '{}';".format(username))#assuming that checkout_List is for present  contains column of user name
+	cursor.execute("select * from checkouts_data where userid = '{}';".format(user[0][0]))#assuming that checkout_List is for present  contains column of user name
 	table_current = cursor.fetchall()
 	if len(user)!=0 :
 		posts = [
