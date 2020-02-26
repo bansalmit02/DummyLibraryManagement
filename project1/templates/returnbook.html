@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Return</title>
+</head>
+<body>
+	
+	<form method="POST" action="">
+     <label for="name">User id</label>
+     <div class="form-row">
+         <input class="form-control" type="text" placeholder="Entry Number" id="name" name="name">
+     </div>
+     <br>
+     <button type="submit " class="btn btn-primary " style="float:left ">See Book Issued Hostory</button>
+   </form>
+
+   {%for post in posts%}
+		<h1>{{ post[1] }}</h1>
+		<p>Author: {{ post[2] }}</p>
+		<p>ISBN: {{post[3]}}</p>
+		<p>Year: {{post[4]}}</p>
+	{%endfor%}
+</div>
+<br>
+<br>
+<div class="border-top pt-3">
+  <small class="text-muted">
+    Want to go admin HomePage? <a class="ml-2" href="{{url_for('admin1')}}">click here</a>
+  </small>
+</body>
+</html>

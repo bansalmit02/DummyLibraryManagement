@@ -27,10 +27,6 @@ except Exception as e:
 app = Flask (__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 
-# class SimpleForm(object):
-# 	"""docstring for SimpleForm"""
-# 	example=RadioField("label", choices=[('value', 'description'), ('value_two', 'dsfafd')])
-	
 @app.route('/hello',methods=['post','get'])
 def hello_world():
     form = SimpleForm()
@@ -41,7 +37,7 @@ def hello_world():
     return render_template('example.html',form=form)
 
 @app.route("/")
-def hello():
+def welcome():
     return render_template('welcome.html')
 
 @app.route("/adminlogin", methods=['GET', 'POST'])
@@ -67,10 +63,18 @@ def admin1():
 	cursor.execute(stmt)
 	tables = cursor.fetchall()
 	posts = tables[0]
-	print(posts[0])
+	
+	
 	return render_template('admin1.html', posts=posts)
 
+@app.route("/adminlogin/userhistory", methods=['GET', 'POST'])
+def user_history():
 
+	return render_template('userhistory.html')
+
+@app.route("/adminlogin/returnbook", methods=['GET', 'POST'])
+def book_return():
+	return render_template('returnbook.html')
 @app.route("/adduser", methods=['GET', 'POST'])
 def add_user():
     form = UserRegistrationForm()
