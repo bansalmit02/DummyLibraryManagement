@@ -4,11 +4,8 @@
 <html>
 <body bgcolor="87ceeb">
 	<div class="navbar">
-     <a href="#"><i class="fa fa-fw fa-envelope"></i> Search</a>
-  <a class="active" href="#"><i class="fa fa-fw fa-home"></i> My Account</a>
-  <!-- <a href="#"><i class="fa fa-fw fa-search"></i> Search</a> -->
  
-  <a href="#"><i class="fa fa-fw fa-user"></i> Logout</a>
+  <a href="{{url_for('logout')}}"><i class="fa fa-fw fa-user"></i> Logout</a>
 </div>
 <center><h1>Library Management System</h1></center>
 
@@ -61,13 +58,14 @@
 		{%for post in posts%}
 		<tr>
 			<td>
-				<h1> {{ post[1] }}</h1>
-				<p>Author: {{ post[2] }}</p>
-				<p>ISBN: {{post[3]}}</p>
-				<p>Year: {{post[4]}}</p>
+				<h1> {{ post[2] }}</h1>
+				<p>Author: {{ post[3] }}</p>
+				<p>ISBN: {{post[4]}}</p>
+				<p>Year: {{post[5]}}</p>
+				<p>item available: {{ post[13] }}</p>
 			</td>	
 			<td>
-				<a href="http://127.0.0.1:5000//bookissues/{{post[3]}}">
+				<a href="/bookissues/{{post[0]}}">
 				<button name="issue_button">Issue</button>
 				</a>
 			</td>

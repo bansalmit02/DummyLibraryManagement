@@ -7,7 +7,7 @@ from forms import UserRegistrationForm, LoginForm, BookIssuesForm
 # from flask_login import LoginManager, UserMixin, login_required, login_user, current_user
 from flask_login import login_required,login_manager
 from functools import wraps
-from flask_login import LoginManager
+from flask_login import LoginManager, UserMixin
 
 
 # login_manager = LoginManager()
@@ -37,9 +37,52 @@ except Exception as e:
 app = Flask (__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 
+class User(UserMixin):
+	"""docstring for User"""
+	# adminloginquery = "select * from temp_table where username = '{}' and password = '{}';".format(username, password);
+	# 	cursor.execute(adminloginquery)
+	# 	usernametable = cursor.fetchall()
+
+	def __init__(self, id,password, b):
+		# ins = "insert into pending values ('{}', '{}');".format(id,password)
+		# cursor.execute(ins)
+		# connection.commit()
+		self.id = id
+		self.password=password
+		self.bool=b
+		self.admin=False
+	def login(self):
+		self.bool=True
+
+	def logout(self):
+		self.bool=False
+	def admin_in(self):
+		self.admin=True
+		self.bool=True
+	def admin_ou(self):
+		self.admin=False
+		self.bool=False
+	def set_id(self,id):
+		self.id=id
+	def set_pwd(self,username):
+		self.password=username
+	def is_admin(self):
+		if(self.admin==True):
+			return True
+		else:
+			return False
+	def is_login(self):
+		if(self.bool==True):
+			return True
+		else:
+			False
+
+
+obj=User('','',False)
 @app.route("/")
 def welcome():
     return render_template('welcome.html')
+
 
 @app.route("/adminlogin", methods=['GET', 'POST'])
 def admin_login():
@@ -53,6 +96,9 @@ def admin_login():
 		cursor.execute(adminloginquery)
 		usernametable = cursor.fetchall()
 		if len(usernametable) != 0:
+			obj.admin_in()
+			obj.set_id(username)
+			obj.set_pwd(password)
 			return redirect(url_for('admin1', username=username))
 		else:
 			flash("user doesn't exist")
@@ -61,24 +107,71 @@ def admin_login():
 @app.route("/adminlogin/admin1", methods=['GET', 'POST'])
 def admin1():
 	username=request.args.get('username', None)
-	print(username);
-	stmt = "select * from admindetails where username = '{}';".format(username)
-	cursor.execute(stmt)
-	tables = cursor.fetchall()
-	posts = tables[0]
-	
-	
-	return render_template('admin1.html', posts=posts)
+	# print(username);
+	if (obj.is_admin() and obj.is_login()):
+		stmt = "select * from admindetails where username = '{}';".format(username)
+		cursor.execute(stmt)
+		tables = cursor.fetchall()
+		posts = tables[0]
+		cursor.execute("select * from pending limit 20;")
+		pendings=cursor.fetchall();
+		cursor.execute("select * from checkouts_data where admin_issued='{}' limit 20;".format(username))
+		chekouthistorys=cursor.fetchall()
+		cursor.execute("select * from checkin_data where admin_issued='{}' limit 20;".format(username))
+		tables = cursor.fetchall()
+		for e in tables:
+			print(e)
+			chekouthistorys.append(e)
+		# buttontext=""
+		# if request.method=='POST':
+		# 	print('helo')
+		# 	buttontext=request.form['issue_button']
+		# 	if buttontext == "issue_button":
+		# 		print('helo')
+			# if request.forms['issue_button']
+		return render_template('admin1.html', posts=posts, pendings=pendings, chekouthistorys=chekouthistorys)
+	elif (obj.is_login()):
+		flash("You are not Admin")
+		return render_template('user.html')
+	else:
+		flash("Sorry, You are not logged in as Admin")
+		return render_template('login.html')
 
+@app.route("/adminlogin/<userid>")
+def acces_granted(userid):
+	cursor.execute("select * from pending where id='{}';".format(userid))
+	storevalue = cursor.fetchall()
+	cursor.execute("insert into userdetails values('{}', '{}', '{}','{}','{}', {}, {})".format(storevalue[0][0], storevalue[0][1], storevalue[0][2], storevalue[0][3], 0, 0, 0))
+	connection.commit()
+	cursor.execute("delete from pending where id='{}'".format(userid))
+	connection.commit()
+	return "User Added {}".format(storevalue[0][0])
 
 @app.route("/adminlogin/userhistory", methods=['GET', 'POST'])
 def user_history():
+	if (obj.is_admin() and obj.is_login()):
 
-	return render_template('userhistory.html')
+
+		return render_template('userhistory.html')
+	elif(obj.is_login):
+		flash("You are not Admin")
+		return render_template('user.html')
+	else:
+		flash("Sorry, You are not logged in as Admin")
+		return render_template('login.html')
 
 @app.route("/adminlogin/returnbook", methods=['GET', 'POST'])
 def book_return():
-	return render_template('returnbook.html')
+	if (obj.is_admin() and obj.is_login()):
+
+
+		return render_template('returnbook.html')
+	elif(obj.is_login()):
+		flash("You are not Admin")
+		return render_template('user.html')
+	else:
+		flash("Sorry, You are not logged in as Admin")
+		return render_template('login.html')
 
 @app.route("/signup", methods=['GET', 'POST'])
 def add_user():
@@ -98,7 +191,7 @@ def add_user():
     	flash("Please wait till confirmation")
     	return redirect(url_for('login_user'))
     elif request.method=='POST' and len(entrynumber) < 6:
-    	flash('length of userid is too sort')
+    	flash('length of userid is too sort at least 7 char')
     elif request.method=='POST' and len(name) < 4:
     	flash('length of name is too sort')
     elif request.method=='POST' and len(password) < 8:
@@ -146,6 +239,8 @@ def login_user():
     userid = form.name.data
     password = form.password.data
     if request.method=='POST' and (not userNotAvailabe(userid) and validateUser(userid, password)) and not pendingAvailable(userid):
+    	obj.login()
+    	obj.set_id(userid)
     	return redirect(url_for('search_form'))
     elif request.method=='POST' and pendingAvailable(userid):
     	flash("User haven't confirmed yet Please wait")
@@ -157,46 +252,73 @@ def login_user():
 
     return render_template('login.html',title='Login',form=form, stringvalue=stringvalue)
 
-def login_required(test):
-    @wraps(test)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return test(*args, **kwargs)
-        else:
-            flash('You need to login first.')
-            return redirect(url_for('login_user'))
-    return wrap
+@app.route('/logout')
+def logout():
+	if (obj.is_login()):
+		obj.admin_ou()
+		flash("Sucessfully, Loged Out")
+		return redirect(url_for('login_user'))
+	else:
+		flash("You are not Logged in, login first")
+		return redirect(url_for('login_user'))
 
-@app.route('/bookissues/<book_name>')
-def book_issues(book_name):
-	form = BookIssuesForm()
-	book_search = "select * from library_collection_inventory where isbn='{}';".format(book_name)
-	print(book_name)
-	cursor.execute(book_search)
-	tables = cursor.fetchall()
-	posts =[e for e in tables]
-	userId = form.userId.data
-	return render_template('bookIssues.html', posts=posts, form=form)
+@app.route('/bookissues/<book_id>', methods=['POST', 'GET'])
+def book_issues(book_id):
+	if (obj.is_admin() and obj.is_login()):
+		form = BookIssuesForm()
+		userid = form.userId.data
+		book_search = "select * from library_collection where id={};".format(book_id)
+		# print(book_name)
+		cursor.execute(book_search)
+		tables = cursor.fetchall()
+		posts =[e for e in tables]
+		userId = form.userId.data
+		adminid = '2017TT10922'
+		itemcount=tables[0][13]
+		if request.method=='POST':
+			userid.upper()
+			if(itemcount > 0 and not userNotAvailabe(userid)):
+				stmt="insert into checkouts_data values ('{}','{}',date(current_timestamp),'{}',date(current_timestamp + interval '5 days'));".format(userid, book_id, adminid)
+				stmtupdate="update library_collection set itemcount = itemcount-1 where id ='{}'".format(book_id)
+				cursor.execute(stmt)
+				connection.commit()
+				cursor.execute(stmtupdate)
+				connection.commit()
+				flash('book issued')
+			elif userNotAvailabe(userid):
+				flash("User not available")
+			else:
+				flash("Book not available")
+
+		return render_template('bookIssues.html', posts=posts, form=form)
+	else:
+		flash("You can't issue book, either you are not Admin or Not loggedin as Admin")
+
 
 @app.route("/search", methods=['GET', 'POST'])
 def search_form():
-	initialtenvalue="""select * from library_collection_inventory limit 10;"""
-	cursor.execute(initialtenvalue)
-	posts1=[e for e in cursor.fetchall()]
-	searchby = ""
-	if request.method == 'POST':
-		print(searchby)
-		book_name = request.form.get('book_name')
-		try:
-			stmt = """select * from library_collection_inventory where {} like '%{}%' limit 20;""".format(searchby, book_name)
-			print(stmt)
-			cursor.execute(stmt)
-			tables = cursor.fetchall()
-			posts1=[e for e in tables]
-			return render_template("searchpage.html", posts=posts1)
-		except Exception as e:
-			raise e
-	return render_template("searchpage.html", posts=posts1)
+	if (obj.is_login()):
+		initialtenvalue="""select * from library_collection limit 10;"""
+		cursor.execute(initialtenvalue)
+		posts1=[e for e in cursor.fetchall()]
+		searchby = ""
+		if request.method == 'POST':
+			# print(searchby)
+			searchby=request.form['searchbyradio']
+			book_name = request.form.get('book_name')
+			try:
+				stmt = """select * from library_collection where {} like '%{}%' limit 20;""".format(searchby, book_name)
+				print(stmt)
+				cursor.execute(stmt)
+				tables = cursor.fetchall()
+				posts1=[e for e in tables]
+				return render_template("searchpage.html", posts=posts1)
+			except Exception as e:
+				raise e
+		return render_template("searchpage.html", posts=posts1)
+	else:
+		flash("Login first")
+		return redirect(url_for('login_user'))
 
 
 
@@ -226,7 +348,6 @@ def checkTableExists(tablename):
     return False
 
 @app.route('/user/<username>')
-# @login_required
 def user(username):
 	cursor.execute("select name from userdetails where name = '{}';".format(username))
 	user = cursor.fetchall()

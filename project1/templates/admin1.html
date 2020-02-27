@@ -2,19 +2,58 @@
 <html lang="en">
 
 <html>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.topnav {
+  overflow: hidden;
+  background-color: #333;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav a:hover {
+  background-color: #ddd;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.topnav-right {
+  float: right;
+  color: white;
+}
+</style>
+</head>
 <body bgcolor="#00FF00">
-<center><h1>{{ posts[1] }}'s Profile</h1></center>
+<div class="topnav">
+	<a href="{{url_for('search_form')}}"><i class="fa fa-fw fa-envelope"></i>Search Book</a>
+	<div class="topnav-right">
+		 
+	  	<li>{{posts[1]}}</li>
+	  	<li>{{posts[2]}}</li>
+	  	<li>{{posts[4]}}</li>
 
+	</div>
+</div>
+
+<!-- <center><h1>{{ posts[1] }}'s Profile</h1></center>
 <center><h2>Email id: {{ posts[2] }}</h2></center>
-<center><h2>contact no: {{ posts[4] }}</h2></center>
-<center>
-	<button type="submit" onclick="location.href='http://127.0.0.1:5000/search'" name="button" value="issue_book_button">Your book issued History</button>
-</center>
-
-<br>
-<br>
-<br>
-
+<center><h2>contact no: {{ posts[4] }}</h2></center> -->
 <table border="1" align="center" cellpadding="5" cellspacing="5">
 <tr>
 	<center>
@@ -28,14 +67,53 @@
 		<button type="submit" onclick="location.href='http://127.0.0.1:5000/adminlogin/returnbook'" name="button" value="return_book_button">Return Book</button>
 		<button type="submit" onclick="location.href='http://127.0.0.1:5000//adminlogin/userhistory'" name="button" value="user_history_button">User History</button>
 	</td>
-	
 </tr>
 </table>
 
 
-
-
-
+	<!-- <center>
+	<button type="submit" onclick="location.href='http://127.0.0.1:5000/search'" name="button" value="issue_book_button">Pending User Request</button>
+	</center> -->
+<br>
+<div>
+  <table border="1" align="center" cellpadding="5" cellspacing="5" style="float: left;">
+    <tr>
+      <td>
+      	<h1>Your Book Isuued History</h1>
+      </td>
+    </tr>
+    {%for chekouthistory in chekouthistorys%}
+    <tr>
+    	<td>
+    		<h1> Userid: {{ chekouthistory[0] }}</h1>
+    		<p>bookId: {{ chekouthistory[1] }}</p>
+    		<p>issud_date: {{chekouthistory[2]}}</p>
+    		<p>due_date: {{chekouthistory[3]}}</p>
+    	</td>
+    </tr>
+    {%endfor%}
+  </table>
+  <table border="1" align="center" cellpadding="5" cellspacing="5" style="float: center;">
+    <tr>
+      <td>
+      	<h1>Pending User Request</h1>
+      </td>
+    </tr>
+    {%for pending in pendings%}
+    <tr>
+    	<td>
+    		<h1> {{ pending[1] }}</h1>
+    		<p>User Id: {{ pending[0] }}</p>
+    		<p>Email Id: {{pending[3]}}</p>
+    	</td>	
+    	<td>
+    		<a href="/adminlogin/{{pending[0]}}">
+				<button name="issue_button">Grant Acces</button>
+			</a>
+    </tr>
+    {%endfor%}
+  </table>
+</div>
 
 </body>
 </html>

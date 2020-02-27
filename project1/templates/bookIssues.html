@@ -9,6 +9,7 @@
 		<p>Author: {{ post[2] }}</p>
 		<p>ISBN: {{post[3]}}</p>
 		<p>Year: {{post[4]}}</p>
+    <p>Number of book available: {{ post[13] }}</p>
 	{%endfor%}
 	<form method="POST" action="">
      {{form.hidden_tag()}}
@@ -23,9 +24,27 @@
      </div>
    </form>
 </div>
+<br>
+<div>
+  <center>
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p> <font color="#FF0000">
+      {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  </font>
+    </p>    
+  {% endif %}
+{% endwith %}
+  </center>
+</div>
+<br>
+
 <div class="border-top pt-3">
   <small class="text-muted">
     Want to search new Book? <a class="ml-2" href="{{url_for('search_form')}}">Search here</a>
   </small>
+</div>
 </body>
 </html>
