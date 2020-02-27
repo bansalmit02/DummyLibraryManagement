@@ -276,7 +276,7 @@ def book_issues(book_id):
 		adminid = '2017TT10922'
 		itemcount=tables[0][13]
 		if request.method=='POST':
-			userid.upper()
+			userid.upper() 
 			if(itemcount > 0 and not userNotAvailabe(userid)):
 				stmt="insert into checkouts_data values ('{}','{}',date(current_timestamp),'{}',date(current_timestamp + interval '5 days'));".format(userid, book_id, adminid)
 				stmtupdate="update library_collection set itemcount = itemcount-1 where id ='{}'".format(book_id)
@@ -285,6 +285,7 @@ def book_issues(book_id):
 				cursor.execute(stmtupdate)
 				connection.commit()
 				flash('book issued')
+				return render_template('bookIssues.html', posts=posts, form=form)
 			elif userNotAvailabe(userid):
 				flash("User not available")
 			else:
