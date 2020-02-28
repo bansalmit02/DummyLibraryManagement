@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Details</title>
+</head>
+<body> 
+	<div class="navbar">
+	  <a class="active" href="{{url_for('search_form')}}"><i class="fa fa-fw fa-home"></i> Search</a>
+	  <a class="active" href="{{url_for('user')}}"><i class="fa fa-fw fa-home"></i> My Profile</a>
+	  <a href="{{url_for('logout')}}"><i class="fa fa-fw fa-user"></i> Logout</a>
+	</div>
+	<center><h1>{{posts[2]}}</h1></center>
+	<center><h2>Book Id: {{ posts[0] }}</h2></center>
+	<center><h2>Bibliography Number: {{ posts[1] }}</h2></center>
+	<center><h2>Author: {{ posts[3] }}</h2></center>
+	<center><h2>ISBN: {{ posts[4] }}</h2></center>
+	<center><h2>publication Year: {{ posts[5] }}</h2></center>
+	<center><h2>Publisher: {{ posts[6] }}</h2></center>
+	<center><h2>Subject: {{ posts[7] }}</h2></center>
+	<center><h2>Item Type: {{ posts[8] }}</h2></center>
+	<center><h2>Item Location: {{ posts[11] }}</h2></center>
+	<center><h2>Item Count: {{ posts[13] }}</h2></center>
+	<center><h2>Item Collection: {{ posts[9] }}</h2></center>
+</body>
+</html>

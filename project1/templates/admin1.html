@@ -4,6 +4,15 @@
 <html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 5px;
+  }
+  </style>
+<style>
 body {
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
@@ -76,46 +85,67 @@ body {
 	<!-- <center>
 	<button type="submit" onclick="location.href='http://127.0.0.1:5000/search'" name="button" value="issue_book_button">Pending User Request</button>
 	</center> -->
-<br>
-<div>
-  <table border="1" align="center" cellpadding="5" cellspacing="5" style="float: left;">
-    <tr>
-      <td>
-      	<h1>Your Book Isuued History</h1>
-      </td>
-    </tr>
-    {%for chekouthistory in chekouthistorys%}
-    <tr>
-    	<td>
-    		<h1> Userid: {{ chekouthistory[0] }}</h1>
-    		<p>bookId: {{ chekouthistory[1] }}</p>
-    		<p>issud_date: {{chekouthistory[2]}}</p>
-    		<p>due_date: {{chekouthistory[3]}}</p>
-    	</td>
-    </tr>
-    {%endfor%}
-  </table>
-  <table border="1" align="center" cellpadding="5" cellspacing="5" style="float: center;">
-    <tr>
-      <td>
-      	<h1>Pending User Request</h1>
-      </td>
-    </tr>
-    {%for pending in pendings%}
-    <tr>
-    	<td>
-    		<h1> {{ pending[1] }}</h1>
-    		<p>User Id: {{ pending[0] }}</p>
-    		<p>Email Id: {{pending[3]}}</p>
-    	</td>	
-    	<td>
-    		<a href="/adminlogin/{{pending[0]}}">
-				<button name="issue_button">Grant Acces</button>
-			</a>
-    </tr>
-    {%endfor%}
-  </table>
-</div>
+<h2>Pending User Request</h2>
+    <center><table style="width:90%">
+      <tr>
+        <th>User Name</th>
+        <th>User Id</th>
+        <th>Email Id</th>
+        <th>Accept</th>
+        
+        
+      </tr>
+      {%for pending in pendings%}
+      <tr>
+        <td>{{ pending[1] }}</td>
+        <td>{{ pending[0] }}</td>
+        <td>{{ pending[3] }}</td>
+        <td><a href="/adminlogin/{{pending[0]}}"><button name="issue_button">Grant Acces</button></a></td>
+  
+        
+      </tr>
+      {%endfor%}
+    </table></center>
+
+
+    <h2>Your Book Isuued History</h2>
+    <center><table style="width:90%">
+      <tr>
+        <th>Userid</th>
+        <th>Book Id</th>
+        <th>Issued date</th>
+        <th>due_date</th> 
+        
+      </tr>
+      {%for chekouthistory in chekouthistorys%}
+      <tr>
+        <td>{{ chekouthistory[0] }}</td>
+        <td>{{ chekouthistory[1] }}</td>
+        <td>{{ chekouthistory[2] }}</td>
+        <td>{{ chekouthistory[3] }}</td> 
+        
+      </tr>
+      {%endfor%}
+    </table></center>
+    <h2>Your Book Checkin History</h2>
+    <center><table style="width:90%">
+      <tr>
+        <th>Userid</th>
+        <th>Book Id</th>
+        <th>Issued date</th>
+        <th>return_date</th> 
+        
+      </tr>
+      {%for checkinhistory in checkinhistorys%}
+      <tr>
+        <td>{{ checkinhistory[0] }}</td>
+        <td>{{ checkinhistory[1] }}</td>
+        <td>{{ checkinhistory[2] }}</td>
+        <td>{{ checkinhistory[4] }}</td> 
+        
+      </tr>
+      {%endfor%}
+    </table></center>
 
 </body>
 </html>

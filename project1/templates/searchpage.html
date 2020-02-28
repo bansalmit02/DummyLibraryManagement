@@ -71,10 +71,11 @@
 		<tr>
 			<td>
 				<h1> {{ post[2] }}</h1>
+				<a href="/bookdetails/{{post[0]}}"><p>Book Id: {{ post[0] }}</p></a>
 				<p>Author: {{ post[3] }}</p>
 				<p>ISBN: {{post[4]}}</p>
-				<p>Year: {{post[5]}}</p>
-				<p>item available: {{ post[13] }}</p>
+				<p>Publication Year: {{post[5]}}</p>
+				<p>Item available: {{ post[13] }}</p>
 			</td>	
 			<td>
 				<a href="/bookissues/{{post[0]}}">

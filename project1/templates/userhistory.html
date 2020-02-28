@@ -34,8 +34,8 @@
      </div>
    </form>
 
-   <hr>
-   <h2>Currently Issued Books Details</h2>
+    <hr>
+    <h2>Currently Issued Books Details</h2>
     <table style="width:100%">
       <tr>
         <th>Book Name</th>
@@ -46,20 +46,20 @@
       </tr>
       {%for post in post1%}
       <tr>
-        <td>Book name from table</td>
         <td>{{ post[1] }}</td>
+        <a href="/bookdetails/{{ post[0] }}"><td>{{ post[0] }}</td></a>
         <td>{{ post[2] }}</td> 
-        <td>{{ post[4] }}</td>
+        <td>{{ post[3] }}</td>
       </tr>
       {%endfor%}
     </table>
 
 
 
-	<hr>
+<hr>
 
-	<h2>Books Issued History</h2>
-	<table style="width:100%">
+<h2>Books Issued History</h2>
+<table style="width:100%">
       <tr>
         <th>Book Name</th>
         <th>Book Id</th>
@@ -69,10 +69,10 @@
       </tr>
       {%for post in post2%}
       <tr>
-        <td>book name from book table</td>
         <td>{{ post[1] }}</td>
+        <a href="/bookdetails/{{ post[0] }}"><td>{{ post[0] }}</td></a>
         <td>{{ post[2] }}</td>
-        <td>{{ post[5] }}</td> 
+        <td>{{ post[4] }}</td> 
         
       </tr>
       {%endfor%}

@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,10 +43,10 @@
       </tr>
       {%for post in post1%}
       <tr>
-        <td>Book name from table</td>
         <td>{{ post[1] }}</td>
+        <td>{{ post[0] }}</td>
         <td>{{ post[2] }}</td> 
-        <td>{{ post[4] }}</td>
+        <td>{{ post[3] }}</td>
       </tr>
       {%endfor%}
     </table>
@@ -65,10 +66,10 @@
       </tr>
       {%for post in post2%}
       <tr>
-        <td>book name from book table</td>
         <td>{{ post[1] }}</td>
+        <td>{{ post[0] }}</td>
         <td>{{ post[2] }}</td>
-        <td>{{ post[5] }}</td> 
+        <td>{{ post[4] }}</td> 
         
       </tr>
       {%endfor%}

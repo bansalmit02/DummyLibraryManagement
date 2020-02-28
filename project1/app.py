@@ -20,10 +20,11 @@ SECRET_KEY='development'
 psql.extensions.register_type(psql.extensions.UNICODE)
 psql.extensions.register_type(psql.extensions.UNICODEARRAY)
 try:
-	connection = psql.connect(user="postgres",
-							password="2474",
-							host="localhost",
-							database = "project1")
+	connection = psql.connect(user="group_36",
+							password="787-867-421",
+							host="10.17.50.126",
+							port="5432",
+							database = "group_36")
 	cursor = connection.cursor();
 	print(connection.get_dsn_parameters(), "\n")
 
@@ -103,20 +104,20 @@ def admin1():
 	# print(username);
 	if (obj.is_admin() and obj.is_login()):
 		username = obj.get_id()
-		stmt = "select * from admindetails where username = '{}';".format(username)
+		stmt = "select * from admindetails where username = '{}';".format(username.upper())
 		cursor.execute(stmt)
 		tables = cursor.fetchall()
 		posts = tables[0]
 		cursor.execute("select * from pending limit 20;")
 		pendings=cursor.fetchall();
-		cursor.execute("select * from checkouts_data where admin_issued='{}' limit 20;".format(username))
+		cursor.execute("select * from checkouts_data where admin_issued='{}' order by issue_date desc limit 10;".format(username.upper()))
 		chekouthistorys=cursor.fetchall()
-		cursor.execute("select * from checkin_data where admin_issued='{}' limit 20;".format(username))
-		tables = cursor.fetchall()
+		cursor.execute("select * from checkin_data where admin_issued='{}' order by return_date limit 10;".format(username.upper()))
+		tables1 = cursor.fetchall()
 		# for e in tables:
 		# 	print(e)
 		# 	chekouthistorys.append(e)
-		return render_template('admin1.html', posts=posts, pendings=pendings, chekouthistorys=chekouthistorys)
+		return render_template('admin1.html', posts=posts, pendings=pendings, chekouthistorys=chekouthistorys, checkinhistorys=tables1)
 	elif (obj.is_login()):
 		flash("You are not Admin")
 		return redirect(url_for('search_form'))
@@ -132,7 +133,7 @@ def acces_granted(userid):
 	connection.commit()
 	cursor.execute("delete from pending where id='{}'".format(userid))
 	connection.commit()
-	return "User Added {}".format(storevalue[0][0])
+	return redirect(url_for('admin1'))
 
 @app.route("/adminlogin/userhistory", methods=['GET', 'POST'])
 def user_history():
@@ -142,16 +143,17 @@ def user_history():
 		if request.method=='POST':
 			# stmt1="select * from checkouts_data where userid = '{}'".format(userid)
 			# stmt2="select * from checkin_data where userid = '{}'".format(userid)
-			cursor.execute("select * from userdetails where id = '{}';".format(userid))
+			cursor.execute("select * from userdetails where id = '{}';".format(userid.upper()))
 			user = cursor.fetchall()
 			# uu=user[0]
 
 			# print (user)
 			# print(obj.get_id())
-			cursor.execute("select * from checkin_data where userid = '{}';".format(user[0][0]))#assuming that checkouts_by_title_data_lens contains column of user name
+			cursor.execute("select id,title,issue_date,due_date,return_date from (select * from library_collection as b join checkin_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
 			table_history = cursor.fetchall()
 			posts1=[e for e in table_history]
-			cursor.execute("select * from checkouts_data where userid = '{}';".format(user[0][0]))#assuming that checkout_List is for present  contains column of user name
+			cursor.execute("select id,title,issue_date,due_date from (select * from library_collection as b join checkouts_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
+			
 			table_current = cursor.fetchall()
 			posts2=[e for e in table_current]
 			if len(user)!=0 :
@@ -391,8 +393,7 @@ def search_form():
 				print(stmt)
 				cursor.execute(stmt)
 				tables = cursor.fetchall()
-				posts1=[e for e in tables]
-				return render_template("searchpage.html", posts=posts1)
+				return render_template("searchpage.html", posts=tables)
 			except Exception as e:
 				raise e
 		return render_template("searchpage.html", posts=posts1)
@@ -400,6 +401,12 @@ def search_form():
 		flash("Login first")
 		return redirect(url_for('login_user'))
 
+@app.route("/bookdetails/<bookid>", methods=['GET', 'POST'])
+def book_details(bookid):
+	stmt="select * from library_collection where id={}".format(bookid)
+	cursor.execute(stmt)
+	posts=cursor.fetchall()[0]
+	return render_template('BookDetails.html', posts=posts)
 
 
 #TODO make this as insert new book methods
@@ -432,16 +439,12 @@ def user():
 	if obj.is_login() and obj.is_admin():
 		return redirect(url_for('admin1'))
 	elif(obj.is_login()):
-		cursor.execute("select * from userdetails where id = '{}';".format(obj.get_id()))
+		cursor.execute("select * from userdetails where id = '{}';".format(obj.get_id().upper()))
 		user = cursor.fetchall()
-		# uu=user[0]
-
-		print (user)
-		print(obj.get_id())
-		cursor.execute("select * from checkin_data where userid = '{}';".format(user[0][0]))#assuming that checkouts_by_title_data_lens contains column of user name
+		cursor.execute("select id,title,issue_date,due_date,return_date from (select * from library_collection as b join checkin_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
 		table_history = cursor.fetchall()
 		posts1=[e for e in table_history]
-		cursor.execute("select * from checkouts_data where userid = '{}';".format(user[0][0]))#assuming that checkout_List is for present  contains column of user name
+		cursor.execute("select id,title,issue_date,due_date from (select * from library_collection as b join checkouts_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
 		table_current = cursor.fetchall()
 		posts2=[e for e in table_current]
 		if len(user)!=0 :
