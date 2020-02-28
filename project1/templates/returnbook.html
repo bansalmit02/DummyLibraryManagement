@@ -4,23 +4,64 @@
 	<title>Book Return</title>
 </head>
 <body>
-	
-	<form method="POST" action="">
-     <label for="name">User id</label>
-     <div class="form-row">
-         <input class="form-control" type="text" placeholder="Entry Number" id="name" name="name">
-     </div>
-     <br>
-     <button type="submit " class="btn btn-primary " style="float:left ">See Book Issued Hostory</button>
-   </form>
-
-   {%for post in posts%}
-		<h1>{{ post[1] }}</h1>
-		<p>Author: {{ post[2] }}</p>
-		<p>ISBN: {{post[3]}}</p>
-		<p>Year: {{post[4]}}</p>
-	{%endfor%}
+ <div class="navbar">
+   
+  <a class="active" href="{{url_for('search_form')}}"><i class="fa fa-fw fa-home"></i> Search</a>
+  <a class="active" href="{{url_for('user')}}"><i class="fa fa-fw fa-home"></i> My Profile</a>
+  <!-- <a href="#"><i class="fa fa-fw fa-search"></i> Search</a> -->
+ 
+  <a href="{{url_for('logout')}}"><i class="fa fa-fw fa-user"></i> Logout</a>
 </div>
+   <form method="POST" action="">
+     {{form.hidden_tag()}}
+     <fieldset class = "form-group">
+       <div class = "form-group">
+         {{form.userId.label(class="form-control-label")}}
+         {{form.userId(class="form-control form-control-lg")}}
+       </div>
+     </fieldset>
+     <div class="form-group">
+       {{form.submit(class="btn btn-outline-info")}}
+     </div>
+   </form>
+</div>
+<br>
+<div>
+  <center>
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p> <font color="#FF0000">
+      {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  </font>
+    </p>    
+  {% endif %}
+{% endwith %}
+  </center>
+<table border="2" align="center" cellpadding="5" cellspacing="5">
+<tr>
+    
+    {%for post in posts%}
+    <tr>
+      <td>
+        <h1>Bookid: {{ post[1] }}</h1>
+        <p>issudd_date: {{ post[2] }}</p>
+        <p>due_date: {{post[4]}}</p>
+        <p>issued_by: {{post[3]}}</p>
+      </td> 
+      <td>
+        <a href="/adminlogin/returnbook/{{ userid }}/{{post[1]}}/{{ post[5] }}">
+        <button name="issue_button">Return Book</button>
+        </a>
+        <p>Fine: {{ post[5] }}</p>
+      </td>
+    </tr>
+    {%endfor%}
+  
+
+  
+</tr>
 <br>
 <br>
 <div class="border-top pt-3">

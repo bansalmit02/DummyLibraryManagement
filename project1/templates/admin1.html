@@ -40,8 +40,10 @@ body {
 </style>
 </head>
 <body bgcolor="#00FF00">
+
 <div class="topnav">
 	<a href="{{url_for('search_form')}}"><i class="fa fa-fw fa-envelope"></i>Search Book</a>
+	<a href="{{url_for('logout')}}"><i class="fa fa-fw fa-user"></i> Logout</a>
 	<div class="topnav-right">
 		 
 	  	<li>{{posts[1]}}</li>

@@ -1,33 +1,80 @@
 
-<!-- Load an icon library -->
-<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- -->
-
-
-
 <!DOCTYPE html>
 <html>
 <head>
   <title>User Profile </title>
+  <style>
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 5px;
+  }
+  </style>
 </head>
 <body>
   <div class="navbar">
-     <a href="#"><i class="fa fa-fw fa-envelope"></i> Search</a>
-  <a class="active" href="#"><i class="fa fa-fw fa-home"></i> My Account</a>
+   
+  <a class="active" href="{{url_for('search_form')}}"><i class="fa fa-fw fa-home"></i> Search</a>
+  <a class="active" href="{{url_for('user')}}"><i class="fa fa-fw fa-home"></i> My Profile</a>
   <!-- <a href="#"><i class="fa fa-fw fa-search"></i> Search</a> -->
  
-  <a href="#"><i class="fa fa-fw fa-user"></i> Logout</a>
+  <a href="{{url_for('logout')}}"><i class="fa fa-fw fa-user"></i> Logout</a>
 </div>
 
-	{% block content %}
-    <h1>User Name : {{ user[0][0] }}</h1>
+  {% block content %}
+    <center><h1>{{ user[0][1] }}</h1>
+    <p>Entry No. : {{user[0][0]}}</p>
+    <p>Email : {{user[0][3]}}</p>
+    <p>Account type : {{user[0][4]}}</p>
+    <p>Book Issued : {{user[0][5]}}</p>
+    <p>Fine : {{user[0][6]}}</p></center>
     <hr>
-    {% for post in posts %}
-    <p>
-    {{ post.author.username }} Issued Book: <b>{{ post.body }}</b>
-    </p>
+    <h2>Currently Issued Books Details</h2>
+    <table style="width:100%">
+      <tr>
+        <th>Book Name</th>
+        <th>Book Id</th>
+        <th>issued Date</th>
+        <th>Due Date</th> 
+        
+      </tr>
+      {%for post in post1%}
+      <tr>
+        <td>Book name from table</td>
+        <td>{{ post[1] }}</td>
+        <td>{{ post[2] }}</td> 
+        <td>{{ post[4] }}</td>
+      </tr>
+      {%endfor%}
+    </table>
+
+
+
+<hr>
+
+<h2>Books Issued History</h2>
+<table style="width:100%">
+      <tr>
+        <th>Book Name</th>
+        <th>Book Id</th>
+        <th>Issued date</th>
+        <th>return Date</th> 
+        
+      </tr>
+      {%for post in post2%}
+      <tr>
+        <td>book name from book table</td>
+        <td>{{ post[1] }}</td>
+        <td>{{ post[2] }}</td>
+        <td>{{ post[5] }}</td> 
+        
+      </tr>
+      {%endfor%}
+    </table>
     <hr>
-    {% endfor %}
+
 {% endblock %}
 
 

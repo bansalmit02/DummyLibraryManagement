@@ -19,5 +19,11 @@ class BookIssuesForm(FlaskForm):
 	userId = StringField('UserId', validators=[DataRequired()])
 	submit = SubmitField('Issue Book')
 
+class BookReturnForm(FlaskForm):
+    userId = StringField('UserId', validators=[DataRequired()])
+    submit = SubmitField('Issue Book List')
 
+class UserHistory(FlaskForm):
+    userId = StringField('UserId', validators=[DataRequired()])
+    submit = SubmitField('See user details')
 

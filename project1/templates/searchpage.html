@@ -4,7 +4,7 @@
 <html>
 <body bgcolor="87ceeb">
 	<div class="navbar">
- 
+ <a href="{{url_for('user')}}"><i class="fa fa-fw fa-user"></i> My Profile</a>
   <a href="{{url_for('logout')}}"><i class="fa fa-fw fa-user"></i> Logout</a>
 </div>
 <center><h1>Library Management System</h1></center>
@@ -52,6 +52,18 @@
 </tr>
 </table>
 </form>
+ <center>
+    {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <p> <font color="#FF0000">
+      {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+  </font>
+    </p>    
+  {% endif %}
+{% endwith %}
+  </center>
 <table border="2" align="center" cellpadding="5" cellspacing="5">
 <tr>
 		

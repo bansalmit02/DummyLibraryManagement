@@ -2,15 +2,86 @@
 <html>
 <head>
 	<title>User History</title>
+	<style>
+  table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  th, td {
+    padding: 5px;
+  }
+  </style>
 </head>
 <body>
+	 <div class="navbar">
+   
+  <a class="active" href="{{url_for('search_form')}}"><i class="fa fa-fw fa-home"></i> Search</a>
+  <a class="active" href="{{url_for('user')}}"><i class="fa fa-fw fa-home"></i> My Profile</a>
+  <!-- <a href="#"><i class="fa fa-fw fa-search"></i> Search</a> -->
+ 
+  <a href="{{url_for('logout')}}"><i class="fa fa-fw fa-user"></i> Logout</a>
+</div>
 	<form method="POST" action="">
-     <label for="name">User id</label>
-     <div class="form-row">
-         <input class="form-control" type="text" placeholder="Entry Number" id="name" name="name">
+     {{form.hidden_tag()}}
+     <fieldset class = "form-group">
+       <div class = "form-group">
+         {{form.userId.label(class="form-control-label")}}
+         {{form.userId(class="form-control form-control-lg")}}
+       </div>
+     </fieldset>
+     <div class="form-group">
+       {{form.submit(class="btn btn-outline-info")}}
      </div>
-     <br>
-     <button type="submit " class="btn btn-primary " style="float:left ">See Book Issued Hostory</button>
    </form>
+
+   <hr>
+   <h2>Currently Issued Books Details</h2>
+    <table style="width:100%">
+      <tr>
+        <th>Book Name</th>
+        <th>Book Id</th>
+        <th>issued Date</th>
+        <th>Due Date</th> 
+        
+      </tr>
+      {%for post in post1%}
+      <tr>
+        <td>Book name from table</td>
+        <td>{{ post[1] }}</td>
+        <td>{{ post[2] }}</td> 
+        <td>{{ post[4] }}</td>
+      </tr>
+      {%endfor%}
+    </table>
+
+
+
+	<hr>
+
+	<h2>Books Issued History</h2>
+	<table style="width:100%">
+      <tr>
+        <th>Book Name</th>
+        <th>Book Id</th>
+        <th>Issued date</th>
+        <th>return Date</th> 
+        
+      </tr>
+      {%for post in post2%}
+      <tr>
+        <td>book name from book table</td>
+        <td>{{ post[1] }}</td>
+        <td>{{ post[2] }}</td>
+        <td>{{ post[5] }}</td> 
+        
+      </tr>
+      {%endfor%}
+    </table>
+    <hr>
+   <div class="border-top pt-3">
+  <small class="text-muted">
+    Want to go profile page? <a class="ml-2" href="{{url_for('admin1')}}">Click here</a>
+  </small>
+</div>
 </body>
 </html>
