@@ -48,7 +48,7 @@ body {
 }
 </style>
 </head>
-<body bgcolor="#00FF00">
+<body bgcolor="#FFFFFF  ">
 
 <div class="topnav">
 	<a href="{{url_for('search_form')}}"><i class="fa fa-fw fa-envelope"></i>Search Book</a>
@@ -74,9 +74,9 @@ body {
 </tr>
 <tr>
 	<td>
-		<button type="submit" onclick="location.href='http://127.0.0.1:5000/search'" name="button" value="issue_book_button">Issue Book</button>
-		<button type="submit" onclick="location.href='http://127.0.0.1:5000/adminlogin/returnbook'" name="button" value="return_book_button">Return Book</button>
-		<button type="submit" onclick="location.href='http://127.0.0.1:5000//adminlogin/userhistory'" name="button" value="user_history_button">User History</button>
+		<button type="submit" onclick="location.href='/search'" name="button" value="issue_book_button">Issue Book</button>
+		<button type="submit" onclick="location.href='/adminlogin/returnbook'" name="button" value="return_book_button">Return Book</button>
+		<button type="submit" onclick="location.href='/adminlogin/userhistory'" name="button" value="user_history_button">User History</button>
 	</td>
 </tr>
 </table>
@@ -120,7 +120,8 @@ body {
       {%for chekouthistory in chekouthistorys%}
       <tr>
         <td>{{ chekouthistory[0] }}</td>
-        <td>{{ chekouthistory[1] }}</td>
+        <td><a href="/bookdetails/{{chekouthistory[1]}}">{{ chekouthistory[1] }}</td></a>
+        
         <td>{{ chekouthistory[2] }}</td>
         <td>{{ chekouthistory[3] }}</td> 
         
@@ -139,7 +140,7 @@ body {
       {%for checkinhistory in checkinhistorys%}
       <tr>
         <td>{{ checkinhistory[0] }}</td>
-        <td>{{ checkinhistory[1] }}</td>
+        <td><a href="/bookdetails/{{checkinhistory[1]}}">{{ checkinhistory[1] }}</td></a>
         <td>{{ checkinhistory[2] }}</td>
         <td>{{ checkinhistory[4] }}</td> 
         

@@ -1,10 +1,8 @@
 from flask import Flask, request, session, jsonify, render_template, url_for, flash, redirect
-# from flask.ext.wtf import Form
 from wtforms import RadioField, Form
 import psycopg2 as psql
 import os
 from forms import UserRegistrationForm, LoginForm, BookIssuesForm, BookReturnForm, UserHistory
-# from flask_login import LoginManager, UserMixin, login_required, login_user, current_user
 from flask_login import login_required,login_manager
 from functools import wraps
 from flask_login import LoginManager, UserMixin
@@ -16,15 +14,16 @@ from flask_login import LoginManager, UserMixin
 
 SECRET_KEY='development'
 # 
-
+# SocketServer.TCPServer.allow_reuse_address = True
+# sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 psql.extensions.register_type(psql.extensions.UNICODE)
 psql.extensions.register_type(psql.extensions.UNICODEARRAY)
 try:
-	connection = psql.connect(user="group_36",
-							password="787-867-421",
-							host="10.17.50.126",
-							port="5432",
-							database = "group_36")
+	connection = psql.connect(user="postgres",
+							password="2474",
+							host="localhost",
+							# port="5432",
+							database = "project1")
 	cursor = connection.cursor();
 	print(connection.get_dsn_parameters(), "\n")
 
@@ -74,7 +73,7 @@ class User(UserMixin):
 obj=User('','',False)
 @app.route("/")
 def welcome():
-    return render_template('welcome.html')
+    return render_template('welcome.html', title="Welcome Page")
 
 
 @app.route("/adminlogin", methods=['GET', 'POST'])
@@ -85,9 +84,12 @@ def admin_login():
 	password = form.password.data
 	if request.method=='POST':
 		username=username.upper()
+		# cursor.execute("drop index admindetails_username;")
+		cursor.execute("create unique index admindetails_username on admindetails (username);")
 		adminloginquery = "select * from admindetails where username = '{}' and password = '{}';".format(username, password);
 		cursor.execute(adminloginquery)
 		usernametable = cursor.fetchall()
+		cursor.execute("drop index admindetails_username;")
 		if len(usernametable) != 0:
 			obj.admin_in()
 			obj.set_id(username)
@@ -143,19 +145,26 @@ def user_history():
 		if request.method=='POST':
 			# stmt1="select * from checkouts_data where userid = '{}'".format(userid)
 			# stmt2="select * from checkin_data where userid = '{}'".format(userid)
+			cursor.execute("create unique index userdetails_id on userdetails (id);")
 			cursor.execute("select * from userdetails where id = '{}';".format(userid.upper()))
 			user = cursor.fetchall()
+			cursor.execute("drop index userdetails_id;")
 			# uu=user[0]
 
 			# print (user)
 			# print(obj.get_id())
-			cursor.execute("select id,title,issue_date,due_date,return_date from (select * from library_collection as b join checkin_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
+			cursor.execute("create view userchekin as (select * from library_collection as b join checkin_data as a on a.bookid=b.id);")
+			cursor.execute("select id,title,issue_date,due_date,return_date from userchekin as k where k.userid= '{}';".format(user[0][0].upper()))
 			table_history = cursor.fetchall()
 			posts1=[e for e in table_history]
-			cursor.execute("select id,title,issue_date,due_date from (select * from library_collection as b join checkouts_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
+			cursor.execute("drop view userchekin;")
+			cursor.execute("create view usercheckouts as (select * from library_collection as b join checkouts_data as a on a.bookid=b.id);")
+			cursor.execute("select id,title,issue_date,due_date from usercheckouts as k where k.userid= '{}';".format(user[0][0].upper()))
+
 			
 			table_current = cursor.fetchall()
 			posts2=[e for e in table_current]
+			cursor.execute("drop view usercheckouts;")
 			if len(user)!=0 :
 				# posts1= table_history
 				posts = [
@@ -179,13 +188,17 @@ def book_return():
 		userid=form.userId.data
 		storevalue=[]
 		if request.method=='POST':
+			userid=userid.upper()
 			stmt = "select * from checkouts_data where userid='{}';".format(userid)
 			cursor.execute(stmt)
 			posts = cursor.fetchall()
 			if len(posts) == 0:
 				flash("No book issued for that user")
+				return redirect(url_for('book_return'))
 			cursor.execute("select date(current_timestamp);")
 			todaydate = cursor.fetchall()[0][0]
+			# cursor.execute("select acc_type from userdetails where id ='{}';").format(userid)
+			# accType = cursor.fetchall()[0][0]
 			fines=[]
 			i=0
 			newposts=[]
@@ -193,10 +206,11 @@ def book_return():
 				duedate=post[4]
 				cursor.execute("select {} < {};".format(duedate, todaydate))
 				istrue = cursor.fetchall()
+				#TODO add fine according to the booking limit table
 				if (istrue[0][0] == 't'):
 					stmt="SELECT DATE_PART('day', '{} 00:00:00'::timestamp - '{} 00:00:00'::timestamp);".format(todaydate-duedate)
 					cursor.execute(stmt)
-					fine = cursor.fetchall()[0][0]*10
+					fine = cursor.fetchall()[0][0]*5
 					post=list(post)
 					post.append(fine)
 					newposts.append(post)
@@ -206,11 +220,6 @@ def book_return():
 					post.append(0)
 					newposts.append(post)
 					i += 1
-			# if request.method == 'POST':
-			# 	print('hello owr')
-			# print(date)
-			
-
 			return render_template('returnbook.html', form=form, posts=newposts, userid=userid)
 
 		return render_template('returnbook.html', form=form)
@@ -228,6 +237,7 @@ def book_return_by_user(userid, bookid, fine):
 	tables = cursor.fetchall()[0]
 	cursor.execute("select date(current_timestamp);")
 	date = cursor.fetchall()[0][0]
+	userid=userid.upper()
 	stmt="insert into checkin_data values('{}',{},'{}'::date,'{}', '{}'::date, '{}'::date,'{}');".format(userid, bookid,tables[2], tables[3], tables[4],date,obj.get_id())
 	cursor.execute(stmt)
 	connection.commit()
@@ -277,9 +287,11 @@ def add_user():
 
 def userNotAvailabe(userid):
 	userid = userid.upper()
+	cursor.execute("create unique index userAvailablityCheck on userdetails (id);")
 	userAvailabe = "select id from userdetails where id='{}';".format(userid)
 	cursor.execute(userAvailabe)
 	tables = cursor.fetchall()
+	cursor.execute("drop index userAvailablityCheck;")
 	if len(tables) == 0:
 		return True
 	elif len(userid) < 5:
@@ -288,9 +300,11 @@ def userNotAvailabe(userid):
 
 def validateUser(userid, password):
 	userid = userid.upper()
+	cursor.execute("create unique index userAvailablityCheck on userdetails (id);")
 	checkUser = "select id from userdetails where password='{}' and id='{}';".format(password, userid)
 	cursor.execute(checkUser)
 	tables = cursor.fetchall()
+	cursor.execute("drop index userAvailablityCheck;")
 	if len(tables) != 0:
 		return True
 	return False
@@ -327,6 +341,7 @@ def logout():
 	if (obj.is_login()):
 		obj.admin_ou()
 		flash("Sucessfully, Loged Out")
+		# connection.close()
 		return redirect(url_for('login_user'))
 	else:
 		flash("You are not Logged in, login first")
@@ -337,10 +352,12 @@ def book_issues(book_id):
 	if (obj.is_admin() and obj.is_login()):
 		form = BookIssuesForm()
 		# userid = form.userId.data
+		cursor.execute("create unique index BookSearch on library_collection (id);")
 		book_search = "select * from library_collection where id={};".format(book_id)
 		# print(book_name)
 		cursor.execute(book_search)
 		tables = cursor.fetchall()
+		cursor.execute("drop index BookSearch;")
 		posts =[e for e in tables]
 		userid = form.userId.data
 		adminid = obj.get_id()
@@ -350,10 +367,20 @@ def book_issues(book_id):
 			cursor.execute(stmt)
 			(book_issued, fine) = cursor.fetchall()[0]
 			userid.upper() 
-			if(itemcount > 0 and not userNotAvailabe(userid)) and book_issued <=5 and fine <= 100:
-				stmt="insert into checkouts_data values ('{}','{}',date(current_timestamp),'{}',date(current_timestamp + interval '5 days'));".format(userid, book_id, adminid)
+			#TODO insert here booklimit fine all the things
+			cursor.execute("select acc_type from userdetails where id='{}';".format(userid))
+			accType=cursor.fetchall()[0][0]
+			cursor.execute("select * from booklimit where type={};".format(accType))
+			print(accType)
+			# print(cursor.fetchall())
+			tab = cursor.fetchall()
+			maxfine=tab[0][2]
+			maxbookissued=tab[0][1]
+			maxdays=tab[0][3]
+			if(itemcount > 0 and not userNotAvailabe(userid)) and book_issued < maxbookissued and fine < maxfine:
+				stmt="insert into checkouts_data values ('{}','{}',date(current_timestamp),'{}',date(current_timestamp + interval '{} days'));".format(userid, book_id, adminid, maxdays)
 				stmtupdate="update library_collection set itemcount = itemcount-1 where id ='{}'".format(book_id)
-				userupdate="update userdetails set book_issues = bookissues + 1 where id ='{}'".format(userid)
+				userupdate="update userdetails set books_issued = books_issued + 1 where id ='{}'".format(userid)
 				cursor.execute(stmt)
 				connection.commit()
 				cursor.execute(stmtupdate)
@@ -364,9 +391,9 @@ def book_issues(book_id):
 				return render_template('bookIssues.html', posts=posts, form=form)
 			elif userNotAvailabe(userid):
 				flash("User not available")
-			elif fine > 100:
+			elif fine >= maxfine:
 				flash("Please Pay fine first")
-			elif book_issued > 5:
+			elif book_issued >= maxbookissued:
 				flash("You already have more Five books issued")
 			else:
 				flash("Book not available")
@@ -439,14 +466,20 @@ def user():
 	if obj.is_login() and obj.is_admin():
 		return redirect(url_for('admin1'))
 	elif(obj.is_login()):
+		cursor.execute("create unique index userAvailablityCheck on userdetails (id);")
 		cursor.execute("select * from userdetails where id = '{}';".format(obj.get_id().upper()))
 		user = cursor.fetchall()
-		cursor.execute("select id,title,issue_date,due_date,return_date from (select * from library_collection as b join checkin_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
+		cursor.execute("drop index userAvailablityCheck;")
+		cursor.execute("create view userchekin as (select * from library_collection as b join checkin_data as a on a.bookid=b.id);")
+		cursor.execute("select id,title,issue_date,due_date,return_date from userchekin as k where k.userid= '{}';".format(user[0][0]))
 		table_history = cursor.fetchall()
 		posts1=[e for e in table_history]
-		cursor.execute("select id,title,issue_date,due_date from (select * from library_collection as b join checkouts_data as a on a.bookid=b.id) as k where k.userid= '{}';".format(user[0][0]))
+		cursor.execute("drop view userchekin;")
+		cursor.execute("create view usercheckouts as (select * from library_collection as b join checkouts_data as a on a.bookid=b.id);")
+		cursor.execute("select id,title,issue_date,due_date from usercheckouts as k where k.userid= '{}';".format(user[0][0]))
 		table_current = cursor.fetchall()
 		posts2=[e for e in table_current]
+		cursor.execute("drop view usercheckouts;")
 		if len(user)!=0 :
 			# posts1= table_history
 			posts = [
