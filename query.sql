@@ -34,3 +34,4 @@ where acc.acc_type ='3' and acc.id = checkouts_data.userid;
 
 
 DATE_PART('day', '{} 00:00:00'::timestamp - '{} 00:00:00'::timestamp);"
+

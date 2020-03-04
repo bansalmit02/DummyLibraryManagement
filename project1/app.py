@@ -19,11 +19,19 @@ SECRET_KEY='development'
 psql.extensions.register_type(psql.extensions.UNICODE)
 psql.extensions.register_type(psql.extensions.UNICODEARRAY)
 try:
-	connection = psql.connect(user="postgres",
-							password="2474",
-							host="localhost",
-							# port="5432",
-							database = "project1")
+	connection = psql.connect(
+							# user="postgres",
+							# password="2474",
+							# host="localhost",
+							# # port="5432",
+							# database = "project1"
+							user="group_36",
+							password="787-867-421",
+							host="10.17.50.126",
+							port="5432",
+							database="group_36"
+
+							)
 	cursor = connection.cursor();
 	print(connection.get_dsn_parameters(), "\n")
 
@@ -145,10 +153,10 @@ def user_history():
 		if request.method=='POST':
 			# stmt1="select * from checkouts_data where userid = '{}'".format(userid)
 			# stmt2="select * from checkin_data where userid = '{}'".format(userid)
-			cursor.execute("create unique index userdetails_id on userdetails (id);")
+			# cursor.execute("create unique index userdetails_id on userdetails (id);")
 			cursor.execute("select * from userdetails where id = '{}';".format(userid.upper()))
 			user = cursor.fetchall()
-			cursor.execute("drop index userdetails_id;")
+			# cursor.execute("drop index userdetails_id;")
 			# uu=user[0]
 
 			# print (user)
