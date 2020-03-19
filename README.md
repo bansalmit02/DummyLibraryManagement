@@ -2,6 +2,13 @@
 
 ## col362 project IIT DELHI
 
+Using Flask Web Application Framework for backend and PSQL for database.
+
+**psycopg2** for connecting backend to database. We had to do raw query that's why we are using thie package.
+
+
+
+
 **Following things are required before running this library management.**
 1. First activate python environment
 ```
