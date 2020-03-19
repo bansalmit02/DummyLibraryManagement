@@ -13,6 +13,8 @@ from flask_login import LoginManager, UserMixin
 
 
 SECRET_KEY='development'
+APP_SETTINGS="config.DevelopmentConfig"
+DATABASE_URL="postgresql://postgres:1234@localhost/xyz"
 # 
 # SocketServer.TCPServer.allow_reuse_address = True
 # sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -20,16 +22,16 @@ psql.extensions.register_type(psql.extensions.UNICODE)
 psql.extensions.register_type(psql.extensions.UNICODEARRAY)
 try:
 	connection = psql.connect(
-							# user="postgres",
-							# password="2474",
-							# host="localhost",
-							# # port="5432",
-							# database = "project1"
-							user="group_36",
-							password="787-867-421",
-							host="10.17.50.126",
-							port="5432",
-							database="group_36"
+							user="postgres",
+							password="2474",
+							host="localhost",
+							# port="5432",
+							database = "project1"
+							# user="group_36",
+							# password="787-867-421",
+							# host="10.17.50.126",
+							# port="5432",
+							# database="group_36"
 
 							)
 	cursor = connection.cursor();
@@ -43,7 +45,8 @@ except Exception as e:
 	print("Error while connection to postgresSql", e)
 # cursor = connection.cursor();
 app = Flask (__name__)
-app.config.from_object(os.environ['APP_SETTINGS'])
+# app.config.from_object(os.environ['APP_SETTINGS'])
+app.config.from_object(APP_SETTINGS)
 
 class User(UserMixin):
 	def __init__(self, id,password, b):
