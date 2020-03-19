@@ -4,10 +4,11 @@
 
 Using Flask Web Application Framework for backend and PSQL for database.
 
-**psycopg2** for connecting backend to database. We had to do raw query that's why we are using thie package.
+**psycopg2** for connecting backend to database. We had to do raw query that's why we are using this package.
 
-
-
+**First create database and then run 
+```\i createtable```
+file for creating all the table in your psql database**
 
 **Following things are required before running this library management.**
 1. First activate python environment
@@ -25,3 +26,8 @@ connection = psql.connect(
     database = "database_name"
 )
 ```
+3. After creating database and setting step2 run app.py
+```python app.py```
+
+**Environment is created using python2**
+
