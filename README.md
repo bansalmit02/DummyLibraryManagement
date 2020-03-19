@@ -1,10 +1,20 @@
-DUmmy Library Mangement
-col362 project
+# Dummy Library Mangement
 
-Following things are required before running this library management.
-1. activate python environment
-  source env/bin/activate
-2. export export APP_SETTINGS="config.DevelopmentConfig"
-3. export DATABASE_URL="postgresql://localhost/book_store"
+## col362 project IIT DELHI
 
-Now run app.py
+**Following things are required before running this library management.**
+1. First activate python environment
+```
+   $cd/project1
+   $source env/bin/activate
+```
+2. Then setup your database in app.py 
+```python
+connection = psql.connect(
+    user="your_user_name",
+    password="Password",
+    host="localhost",
+    port="5432",
+    database = "database_name"
+)
+```
