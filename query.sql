@@ -35,3 +35,42 @@ where acc.acc_type ='3' and acc.id = checkouts_data.userid;
 
 DATE_PART('day', '{} 00:00:00'::timestamp - '{} 00:00:00'::timestamp);"
 
+select count(userid), userid
+from (
+select userid 
+from checkouts_data 
+as b join  (select count(author), author, id
+from library_collection  
+group by author, id
+having count(author) = 1) as a on b.bookid=a.id ;
+project1=# select userid 
+from checkouts_data 
+as b join  (select count(author), author, id
+from library_collection 
+group by author, id
+having count(author) = 1) as a on b.bookid=a.id) as z
+group by z.userid
+order by count(z.userid) desc limit 10;
+
+
+select count(userid), userid
+from(
+select userid 
+from checkouts_data 
+as b join  (select count(author), author, id
+from library_collection 
+group by author, id
+having count(author) = 1) as a on b.bookid=a.id
+) as z
+group by z.userid
+order by count(z.userid) desc limit 10;
+
+select title from
+
+library_collection as p,
+
+(select bookid from checkin_data
+order by (return_date - issue_date) desc
+limit 10) as q
+where q.bookid = p.id
+group by title;
