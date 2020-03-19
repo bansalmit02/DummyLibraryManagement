@@ -1,6 +1,6 @@
 MIT License
-
-Copyright (c) 2020 Asif Anwar, Mohammed Zia Kamran, Minhaj Shakeel
+ 
+<span style="color:yellow">Copyright (c) 2020</span> <span style="color:blue">**Asif Anwar, Mohammed Zia Kamran, Minhaj Shakeel**</span>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
