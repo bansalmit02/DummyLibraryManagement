@@ -11,12 +11,14 @@ Using Flask Web Application Framework for backend and PSQL for database.
 file for creating all the table in your psql database**
 
 **Following things are required before running this library management.**
-1. First activate python environment
+1. First create python3 virtual environment and activatae
+2. then run requirements.txt
 ```
-   $cd/project1
-   $source env/bin/activate
+   $cd project1
+   $pip install -r requiremnts.txt
+   
 ```
-2. Then setup your database in app.py 
+3. Then setup your database in app.py 
 ```python
 connection = psql.connect(
     user="your_user_name",
@@ -29,5 +31,5 @@ connection = psql.connect(
 3. After creating database and setting step2 run app.py
 ```python app.py```
 
-**Environment is created using python2**
+**Environment is created using python3**
 
