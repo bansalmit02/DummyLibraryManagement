@@ -14,7 +14,6 @@ file for creating all the table in your psql database**
 1. First create python3 virtual environment and activatae
 2. then run requirements.txt
 ```
-   $cd project1
    $pip install -r requiremnts.txt
    
 ```
