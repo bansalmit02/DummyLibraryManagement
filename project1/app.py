@@ -498,7 +498,7 @@ def user():
 			{'author': table_history, 'body': posts2}
 			]
 			return render_template('user.html', user=user, post1=posts2, post2=posts1)
-	   	else: 
+		else: 
 	   		return 'not found'
 	else:
 		flash("you are not logged in, login first")
