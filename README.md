@@ -8,7 +8,7 @@ Using Flask Web Application Framework for backend and PSQL for database.
 
 **First create database and then run 
 ```\i createtable```
-file for creating all the table in your psql database**
+file for creating all the table or shema in your psql database**
 
 **Following things are required before running this library management.**
 1. First create python3 virtual environment and activatae
