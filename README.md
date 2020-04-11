@@ -32,3 +32,5 @@ connection = psql.connect(
 
 **Environment is created using python3**
 
+[LICENSE](https://github.com/asifanwar007/DummyLibraryManagement/blob/master/LICENSE.md "MIT License")
+
