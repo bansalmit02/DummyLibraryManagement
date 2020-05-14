@@ -1,18 +1,18 @@
 # Dummy Library Mangement
 
-## col362 project IIT DELHI
+## Project, IIT DELHI
 
-Using Flask Web Application Framework for backend and PSQL for database.
+We created a Database Management System using **Flask** Web Application Framework for backend and **PSQL** for database.
 
-**psycopg2** for connecting backend to database. We had to do raw query that's why we are using this package.
+**psycopg2** is used for connecting backend to database (We had to do raw query that's why using this package)
 
 **First create database and then run 
 ```\i createtable```
 file for creating all the table or schema in your psql database**
 
 **Following things are required before running this library management.**
-1. First create python3 virtual environment and activatae
-2. then run requirements.txt
+1. First create python3 virtual environment and activate
+2. Then run requirements.txt
 ```
    $pip install -r requiremnts.txt
    
